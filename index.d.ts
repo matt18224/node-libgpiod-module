@@ -3,7 +3,7 @@
  * GPIO lines) on the Linux host. The number of GPIO chips depends on
  * the hardware available.
  */
-declare class Chip {
+export declare class Chip {
   /**
    * Constructs a new Chip instance by its chip number.
    *
@@ -40,7 +40,7 @@ declare class Chip {
  * Line instances represent direct access to a specific GPIO line on
  * the Linux host. Those lines can be reserved as input or output.
  */
-declare class Line {
+export declare class Line {
 
   /**
    * Constructs a new Line instance for the given chip and line offset.
@@ -124,4 +124,4 @@ declare class Line {
  * the current execution environment, otherwise false (for example
  * in non-Linux development environments).
  */
-declare function available(): boolean;
+export declare function available(): boolean;
