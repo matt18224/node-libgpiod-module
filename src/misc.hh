@@ -10,6 +10,7 @@
 NAN_METHOD(version);
 NAN_METHOD(getInstantLineValue);
 NAN_METHOD(setInstantLineValue);
+NAN_METHOD(usleep);
 
 NAN_MODULE_INIT(InitAll);
 
