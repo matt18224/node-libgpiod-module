@@ -1,4 +1,5 @@
 // index.js
+
 import os from 'os';
 import bindings from 'bindings';
 
@@ -20,4 +21,5 @@ if (os.type() === 'Linux') {
         }
     }
 }
+export const {Chip, Line} = libgpiod;
 export default libgpiod;
