@@ -25,7 +25,6 @@ Line::Line(Chip *chip, unsigned int pin) {
   line = gpiod_chip_get_line(chip->getNativeChip(), pin);
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, line);
   if (!line) Nan::ThrowError("Unable to open GPIO line ");
-  std::cout << "Created" << std::endl
 }
 
 Line::~Line() {
@@ -35,7 +34,6 @@ Line::~Line() {
   gpiod_line_close_chip(line);
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   line = NULL;
-  std::cout << "Destroyed" << std::endl
 }
 
 NAN_METHOD(Line::New) {
