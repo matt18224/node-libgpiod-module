@@ -16,6 +16,7 @@
                     "libraries" : [
                         "-lgpiod"
                     ],
+                    "cflags": ["-std=c++11"]
                 }]
             ]
         }

@@ -125,3 +125,5 @@ export declare class Line {
  * in non-Linux development environments).
  */
 export declare function available(): boolean;
+
+export declare function usleep(microseconds: number): void;

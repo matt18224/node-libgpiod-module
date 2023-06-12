@@ -21,5 +21,5 @@ if (os.type() === 'Linux') {
         }
     }
 }
-export const {Chip, Line} = libgpiod;
+export const {Chip, Line, usleep} = libgpiod;
 export default libgpiod;

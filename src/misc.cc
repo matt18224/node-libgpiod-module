@@ -1,5 +1,17 @@
 #include "misc.hh"
 
+NAN_METHOD(usleep) {
+  if (info.Length() < 1 || !info[0]->IsNumber()) {
+    Nan::ThrowTypeError("Wrong arguments");
+    return;
+  }
+
+  int delay = info[0]->NumberValue(Nan::GetCurrentContext()).FromJust();
+  usleep(delay);
+
+  info.GetReturnValue().Set(Nan::New("Delay done").ToLocalChecked());
+}
+
 NAN_METHOD(version) {
   info.GetReturnValue()
       .Set(Nan::New<v8::String>(gpiod_version_string())
