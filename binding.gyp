@@ -16,7 +16,7 @@
                     "libraries" : [
                         "-lgpiod"
                     ],
-                    "cflags": ["-std=c++11 -fexceptions"]
+                    "cflags": ["-std=c++11", "-fexceptions"]
                 }]
             ]
         }
