@@ -11,6 +11,8 @@ class Line : public Nan::ObjectWrap {
   static NAN_MODULE_INIT(Init);
   static NAN_METHOD(New);
   gpiod_line *getNativeLine();
+  unsigned int getValueCpp();
+  void setValueCpp(unsigned int value);
 
  private:
   explicit Line(Chip *chip, unsigned int pin);
@@ -28,9 +30,6 @@ class Line : public Nan::ObjectWrap {
   static NAN_METHOD(release);
 
   static Nan::Persistent<v8::Function> constructor;
-
-  unsigned int getValueCpp();
-  void setValueCpp(unsigned int value);
 
   gpiod_line *line;
 };
