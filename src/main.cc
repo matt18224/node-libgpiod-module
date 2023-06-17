@@ -12,6 +12,8 @@ NAN_MODULE_INIT(InitAll) {
            Nan::GetFunction(Nan::New<v8::FunctionTemplate>(setInstantLineValue)).ToLocalChecked());
   Nan::Set(target, Nan::New("usleep").ToLocalChecked(),
            Nan::GetFunction(Nan::New<v8::FunctionTemplate>(usleep)).ToLocalChecked());
+  Nan::Set(target, Nan::New("readBit").ToLocalChecked(),
+           Nan::GetFunction(Nan::New<v8::FunctionTemplate>(readBit)).ToLocalChecked());
   Chip::Init(target);
   Line::Init(target);
 }
