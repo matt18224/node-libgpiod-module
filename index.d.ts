@@ -127,3 +127,5 @@ export declare class Line {
 export declare function available(): boolean;
 
 export declare function usleep(microseconds: number): void;
+
+export declare function readBit(pdSck: Line, dout: Line);

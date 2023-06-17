@@ -47,3 +47,40 @@ NAN_METHOD(setInstantLineValue) {
 
   info.GetReturnValue().Set(true);
 }
+
+// Assumes Line class is defined and included.
+
+NAN_METHOD(readBit) {
+  if (info.Length() < 2 || !info[0]->IsObject() || !info[1]->IsObject()) {
+    Nan::ThrowTypeError("Wrong arguments, expected two Line instances");
+    return;
+  }
+
+  Line *pdSck = Nan::ObjectWrap::Unwrap<Line>(info[0]->ToObject(Nan::GetCurrentContext()).ToLocalChecked());
+  Line *dout = Nan::ObjectWrap::Unwrap<Line>(info[1]->ToObject(Nan::GetCurrentContext()).ToLocalChecked());
+
+  if (!pdSck || !dout) {
+    Nan::ThrowError("Could not unwrap Line object");
+    return;
+  }
+
+  // pdSck.setValue(1)
+  v8::Local<v8::Value> setValueArgs1[] = { Nan::New(1) };
+  Nan::MakeCallback(info[0]->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), "setValue", 1, setValueArgs1);
+
+  // usleep(1)
+  usleep(1);
+
+  // bitValue = dout.getValue()
+  v8::Local<v8::Value> bitValue = Nan::MakeCallback(info[1]->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), "getValue", 0, nullptr);
+  if (!bitValue->IsNumber()) {
+    Nan::ThrowError("bitValue is not a number");
+    return;
+  }
+
+  // pdSck.setValue(0)
+  v8::Local<v8::Value> setValueArgs0[] = { Nan::New(0) };
+  Nan::MakeCallback(info[0]->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), "setValue", 1, setValueArgs0);
+
+  info.GetReturnValue().Set(bitValue);
+}
