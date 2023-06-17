@@ -64,23 +64,21 @@ NAN_METHOD(readBit) {
     return;
   }
 
-  // pdSck.setValue(1)
-  v8::Local<v8::Value> setValueArgs1[] = { Nan::New(1) };
-  Nan::MakeCallback(info[0]->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), "setValue", 1, setValueArgs1);
+  try {
+    // pdSck.setValueCpp(1)
+    pdSck->setValueCpp(1);
 
-  // usleep(1)
-  usleep(1);
+    // usleep(1)
+    usleep(1);
 
-  // bitValue = dout.getValue()
-  v8::Local<v8::Value> bitValue = Nan::MakeCallback(info[1]->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), "getValue", 0, nullptr);
-  if (!bitValue->IsNumber()) {
-    Nan::ThrowError("bitValue is not a number");
-    return;
+    // bitValue = dout.getValueCpp()
+    unsigned int bitValue = dout->getValueCpp();
+
+    // pdSck.setValueCpp(0)
+    pdSck->setValueCpp(0);
+
+    info.GetReturnValue().Set(bitValue);
+  } catch (const std::runtime_error& e) {
+    Nan::ThrowError(e.what());
   }
-
-  // pdSck.setValue(0)
-  v8::Local<v8::Value> setValueArgs0[] = { Nan::New(0) };
-  Nan::MakeCallback(info[0]->ToObject(Nan::GetCurrentContext()).ToLocalChecked(), "setValue", 1, setValueArgs0);
-
-  info.GetReturnValue().Set(bitValue);
 }

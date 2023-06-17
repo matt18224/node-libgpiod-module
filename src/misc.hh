@@ -6,6 +6,7 @@
 #include <gpiod.h>
 #include <nan.h>
 #include <unistd.h>
+#include "line.hh"
 
 NAN_METHOD(version);
 NAN_METHOD(getInstantLineValue);

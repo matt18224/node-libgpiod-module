@@ -95,29 +95,44 @@ NAN_METHOD(Line::getLineConsumer) {
   else info.GetReturnValue().Set(Nan::New<v8::String>(name).ToLocalChecked());
 }
 
-NAN_METHOD(Line::getValue) {
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
-  if ( !obj->line) {
-    Nan::ThrowError( "::getValue() for line==NULL");
-    return;
+unsigned int Line::getValueCpp() {
+  if (!this->line) {
+    throw std::runtime_error("Line is NULL");
   }
-  int ret = gpiod_line_get_value(obj->getNativeLine());
-  if(-1 == ret) {
-    Nan::ThrowError( "::getValue() failed");
-  } else info.GetReturnValue().Set(ret);
+  int ret = gpiod_line_get_value(this->getNativeLine());
+  if (-1 == ret) {
+    throw std::runtime_error("getValue failed");
+  }
+  return ret;
+}
+
+void Line::setValueCpp(unsigned int value) {
+  if (!this->line) {
+    throw std::runtime_error("Line is NULL");
+  }
+  if (-1 == gpiod_line_set_value(this->getNativeLine(), value)) {
+    throw std::runtime_error("setValue failed");
+  }
+}
+
+NAN_METHOD(Line::getValue) {
+  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
+  try {
+    unsigned int ret = obj->getValueCpp();
+    info.GetReturnValue().Set(ret);
+  } catch (const std::runtime_error& e) {
+    Nan::ThrowError(e.what());
+  }
 }
 
 NAN_METHOD(Line::setValue) {
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
-  if ( !obj->line) {
-    Nan::ThrowError( "::setValue() for line==NULL");
-    return;
-  }
   unsigned int value = Nan::To<unsigned int>(info[0]).FromJust();
-  if(-1 == gpiod_line_set_value(obj->getNativeLine(), value))
-    Nan::ThrowError( "::setValue() failed");
+  try {
+    obj->setValueCpp(value);
+  } catch (const std::runtime_error& e) {
+    Nan::ThrowError(e.what());
+  }
 }
 
 NAN_METHOD(Line::requestInputMode) {

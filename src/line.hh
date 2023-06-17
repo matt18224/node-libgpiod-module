@@ -29,6 +29,9 @@ class Line : public Nan::ObjectWrap {
 
   static Nan::Persistent<v8::Function> constructor;
 
+  unsigned int getValueCpp();
+  void setValueCpp(unsigned int value);
+
   gpiod_line *line;
 };
 
