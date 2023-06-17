@@ -69,7 +69,7 @@ NAN_METHOD(readBit) {
     pdSck->setValueCpp(1);
 
     // usleep(1)
-    usleep(1);
+//     usleep(1);
 
     // bitValue = dout.getValueCpp()
     unsigned int bitValue = dout->getValueCpp();
