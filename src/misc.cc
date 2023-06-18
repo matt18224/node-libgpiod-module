@@ -7,7 +7,7 @@ Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
     return;
   }
 
-  int delay = info[0].NumberValue(Napi::GetCurrentContext());
+  int delay = info[0].As<Napi::Number>().Int32Value();
   usleep(delay);
 
   return Napi::String::New(env, "Delay done");
@@ -29,7 +29,7 @@ Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
   if (-1 == (value = gpiod_ctxless_get_value(*device, offset, active_low, *consumer))) {
     Napi::Error::New(env, "Unable to get instant value").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
 
   return Napi::Number::New(env, value);
@@ -45,7 +45,7 @@ Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
   if (-1 == gpiod_ctxless_set_value(*device, offset, value, active_low, *consumer, NULL, NULL)) {
     Napi::Error::New(env, "Unable to get instant value").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
 
   return true;
@@ -66,7 +66,7 @@ Napi::Value readBit(const Napi::CallbackInfo& info) {
   if (!pdSck || !dout) {
     Napi::Error::New(env, "Could not unwrap Line object").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
 
   try {
@@ -85,6 +85,6 @@ Napi::Value readBit(const Napi::CallbackInfo& info) {
     return bitValue;
   } catch (const std::runtime_error& e) {
     Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
-
+    return env.Null();
   }
 }

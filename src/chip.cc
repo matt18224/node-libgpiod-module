@@ -39,7 +39,7 @@ Napi::Value Chip::New(const Napi::CallbackInfo& info) {
     std::string device = info[0].As<Napi::String>();
     Chip *obj = new Chip(*device);
     DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
-    if ( !obj->chip) return;
+    if ( !obj->chip) return env.Null();
     DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
     obj->Wrap(info.This());
     return info.This();
@@ -59,7 +59,7 @@ Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo& info) {
   if ( !obj->chip) {
     Napi::Error::New(env,  "::getNumberOfLines() for chip==NULL").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
   int ret = gpiod_chip_num_lines(obj->getNativeChip());
   if(-1 == ret) {
@@ -74,7 +74,7 @@ Napi::Value Chip::getChipName(const Napi::CallbackInfo& info) {
   if ( !obj->chip) {
     Napi::Error::New(env,  "::getChipName() for chip==NULL").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
   const char *name = gpiod_chip_name(obj->getNativeChip());
   if(!name) {
@@ -89,7 +89,7 @@ Napi::Value Chip::getChipLabel(const Napi::CallbackInfo& info) {
   if ( !obj->chip) {
     Napi::Error::New(env,  "::getChipLabel() for chip==NULL").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
   const char *label = gpiod_chip_label(obj->getNativeChip());
   if(!label) {

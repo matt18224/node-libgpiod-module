@@ -65,12 +65,12 @@ Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
   if ( !obj->line) {
     Napi::Error::New(env,  "::getLineOffset() for line==NULL").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
   int ret = gpiod_line_offset(obj->getNativeLine());
   if(-1 == ret) {
     Napi::Error::New(env,  "::getLineOffset() failed").ThrowAsJavaScriptException();
-
+    return env.Null();
   } else return ret;
 }
 
@@ -79,8 +79,7 @@ Napi::Value Line::getLineName(const Napi::CallbackInfo& info) {
   Line *obj = info.This().Unwrap<Line>();
   if ( !obj->line) {
     Napi::Error::New(env,  "::getLineName() for line==NULL").ThrowAsJavaScriptException();
-
-    return;
+    return env.Null();
   }
   const char *name = gpiod_line_name(obj->getNativeLine());
   if(!name) return env.Undefined();
@@ -92,8 +91,7 @@ Napi::Value Line::getLineConsumer(const Napi::CallbackInfo& info) {
   Line *obj = info.This().Unwrap<Line>();
   if ( !obj->line) {
     Napi::Error::New(env,  "::getLineConsumer() for line==NULL").ThrowAsJavaScriptException();
-
-    return;
+    return env.Null();
   }
   const char *name = gpiod_line_consumer(obj->getNativeLine());
   if(!name) return env.Undefined();
@@ -148,7 +146,7 @@ Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
   if (!obj->line) {
     Napi::Error::New(env,  "::requestInputMode() for line==NULL").ThrowAsJavaScriptException();
 
-    return;
+        return env.Null();
   }
   std::string consumer = info[0].As<Napi::String>();
   if (-1 == gpiod_line_request_input(obj->getNativeLine(), *consumer))
@@ -162,7 +160,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
   if (!obj->line) {
       Napi::Error::New(env,  "::requestOutputMode() for line==NULL").ThrowAsJavaScriptException();
 
-      return;
+          return env.Null();
     }
   unsigned int value = 0;
   Napi::Value defaultValue = info[0];
@@ -171,7 +169,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
     if (val > 1) {
       Napi::Error::New(env,  "::requestOutputMode() value is not in {0,1} range").ThrowAsJavaScriptException();
 
-      return;
+          return env.Null();
     }
     value = val;
   }
@@ -186,7 +184,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
 Napi::Value Line::release(const Napi::CallbackInfo& info) {
   Line *obj = info.This().Unwrap<Line>();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  if ( !obj->getNativeLine()) return;
+  if ( !obj->getNativeLine())     return env.Null();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   gpiod_line_release(obj->getNativeLine());
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
