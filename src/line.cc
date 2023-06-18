@@ -38,6 +38,7 @@ Line::~Line() {
 }
 
 Napi::Value Line::New(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   if (info.IsConstructCall()) {
     DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
@@ -60,6 +61,7 @@ Napi::Value Line::New(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Line *obj = info.This().Unwrap<Line>();
   if ( !obj->line) {
@@ -75,6 +77,7 @@ Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Line::getLineName(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Line *obj = info.This().Unwrap<Line>();
   if ( !obj->line) {
@@ -87,6 +90,7 @@ Napi::Value Line::getLineName(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Line::getLineConsumer(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Line *obj = info.This().Unwrap<Line>();
   if ( !obj->line) {
@@ -119,6 +123,7 @@ void Line::setValueCpp(unsigned int value) {
 }
 
 Napi::Value Line::getValue(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Line *obj = info.This().Unwrap<Line>();
   try {
     unsigned int ret = obj->getValueCpp();
@@ -130,6 +135,7 @@ Napi::Value Line::getValue(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Line *obj = info.This().Unwrap<Line>();
   unsigned int value = Napi::To<unsigned int>(info[0]);
   try {
@@ -141,6 +147,7 @@ Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Line *obj = info.This().Unwrap<Line>();
   if (!obj->line) {
@@ -155,6 +162,7 @@ Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Line *obj = info.This().Unwrap<Line>();
   if (!obj->line) {
@@ -182,6 +190,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
 
 
 Napi::Value Line::release(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   Line *obj = info.This().Unwrap<Line>();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   if ( !obj->getNativeLine())     return env.Null();

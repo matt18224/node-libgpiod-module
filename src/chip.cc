@@ -33,6 +33,7 @@ Chip::~Chip() {
 }
 
 Napi::Value Chip::New(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   if (info.IsConstructCall()) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
@@ -54,6 +55,7 @@ Napi::Value Chip::New(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Chip *obj = info.This().Unwrap<Chip>();
   if ( !obj->chip) {
@@ -69,6 +71,7 @@ Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Chip::getChipName(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Chip *obj = info.This().Unwrap<Chip>();
   if ( !obj->chip) {
@@ -84,6 +87,7 @@ Napi::Value Chip::getChipName(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value Chip::getChipLabel(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Chip *obj = info.This().Unwrap<Chip>();
   if ( !obj->chip) {

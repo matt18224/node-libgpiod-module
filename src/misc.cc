@@ -1,6 +1,7 @@
 #include "misc.hh"
 
 Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 1 || !info[0].IsNumber()) {
     Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
 
@@ -14,10 +15,12 @@ Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value version(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   return Napi::String::New(env, gpiod_version_string());
 }
 
 Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   std::string device = info[0].As<Napi::String>();
   unsigned int offset = Napi::To<unsigned int>(info[1]);
   bool active_low = info[2].As<Napi::Boolean>().Value();
@@ -34,6 +37,7 @@ Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   std::string device = info[0].As<Napi::String>();
   unsigned int offset = Napi::To<unsigned int>(info[1]);
   unsigned int value = Napi::To<unsigned int>(info[2]);
@@ -52,6 +56,7 @@ Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
 // Assumes Line class is defined and included.
 
 Napi::Value readBit(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   if (info.Length() < 2 || !info[0].IsObject() || !info[1].IsObject()) {
     Napi::TypeError::New(env, "Wrong arguments, expected two Line instances").ThrowAsJavaScriptException();
 
@@ -80,7 +85,7 @@ Napi::Value readBit(const Napi::CallbackInfo& info) {
     // pdSck.setValueCpp(0)
     pdSck->setValueCpp(0);
 
-    return bitValue;
+    return Napi::Number::New(env, bitValue);
   } catch (const std::runtime_error& e) {
     Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
     return env.Null();
