@@ -46,7 +46,7 @@ Napi::Value Line::New(const Napi::CallbackInfo& info) {
     unsigned int pin = Napi::To<unsigned int>(info[1]);
     Line *obj = new Line(chip, pin);
     DOUT( "%s %s(%d):%d %p\n", __FILE__, __FUNCTION__, pin, __LINE__, obj);
-    if ( !obj->line) return;
+    if ( !obj->line) return env.Null();
     DOUT( "%s %s(%d):%d %p->%p\n", __FILE__, __FUNCTION__, pin, __LINE__, obj, obj->line);
     obj->Wrap(info.This());
     return info.This();

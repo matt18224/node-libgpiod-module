@@ -63,8 +63,11 @@ Napi::Value readBit(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  Line *pdSck = info[0].ToObject(Napi::GetCurrentContext()).Unwrap<Line>();
-  Line *dout = info[1].ToObject(Napi::GetCurrentContext()).Unwrap<Line>();
+  Napi::Object pdSckObj = info[0].As<Napi::Object>();
+  Line *pdSck = Line::Unwrap(pdSckObj);
+
+  Napi::Object doutObj = info[1].As<Napi::Object>();
+  Line *dout = Line::Unwrap(doutObj);
 
   if (!pdSck || !dout) {
     Napi::Error::New(env, "Could not unwrap Line object").ThrowAsJavaScriptException();
