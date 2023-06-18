@@ -51,13 +51,6 @@ Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(env, true);
 }
 
-In this code:
-
-    info[0].As<Napi::String>().Utf8Value() is used to get a std::string from a Napi::Value.
-    info[1].As<Napi::Number>().Uint32Value() is used to get an unsigned int from
-
-
-
 // Assumes Line class is defined and included.
 
 Napi::Value readBit(const Napi::CallbackInfo& info) {
