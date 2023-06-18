@@ -4,7 +4,7 @@ Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
   if (info.Length() < 1 || !info[0].IsNumber()) {
     Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
 
   int delay = info[0].As<Napi::Number>().Int32Value();
@@ -14,9 +14,7 @@ Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value version(const Napi::CallbackInfo& info) {
-  info.GetReturnValue()
-      .Set(Napi::String::New(env, gpiod_version_string())
-               );
+  return Napi::String::New(env, gpiod_version_string());
 }
 
 Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
@@ -48,7 +46,7 @@ Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  return true;
+  return Napi::Boolean::New(env, true);
 }
 
 // Assumes Line class is defined and included.
@@ -57,7 +55,7 @@ Napi::Value readBit(const Napi::CallbackInfo& info) {
   if (info.Length() < 2 || !info[0].IsObject() || !info[1].IsObject()) {
     Napi::TypeError::New(env, "Wrong arguments, expected two Line instances").ThrowAsJavaScriptException();
 
-    return;
+    return env.Null();
   }
 
   Line *pdSck = info[0].ToObject(Napi::GetCurrentContext()).Unwrap<Line>();
