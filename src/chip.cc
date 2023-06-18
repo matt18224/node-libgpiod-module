@@ -15,7 +15,7 @@ Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
   (target).Set(Napi::String::New(env, "Chip"), Napi::GetFunction(tpl));
 }
 
-Chip::Chip(const char *device) {
+Chip::Chip(Napi::Env env, const char *device) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   chip = gpiod_chip_open_lookup(device);
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
@@ -38,7 +38,7 @@ Napi::Value Chip::New(const Napi::CallbackInfo& info) {
   if (info.IsConstructCall()) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
     std::string device = info[0].As<Napi::String>();
-    Chip *obj = new Chip(*device);
+    Chip *obj = new Chip(env, *device);
     DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
     if ( !obj->chip) return env.Null();
     DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
