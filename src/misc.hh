@@ -4,16 +4,17 @@
 #include <iostream>
 
 #include <gpiod.h>
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 #include <unistd.h>
 #include "line.hh"
 
-NAN_METHOD(version);
-NAN_METHOD(getInstantLineValue);
-NAN_METHOD(setInstantLineValue);
-NAN_METHOD(usleep);
-NAN_METHOD(readBit);
+Napi::Value version(const Napi::CallbackInfo& info);
+Napi::Value getInstantLineValue(const Napi::CallbackInfo& info);
+Napi::Value setInstantLineValue(const Napi::CallbackInfo& info);
+Napi::Value usleep(const Napi::CallbackInfo& info);
+Napi::Value readBit(const Napi::CallbackInfo& info);
 
-NAN_MODULE_INIT(InitAll);
+Napi::Object InitAll(Napi::Env env, Napi::Object exports);
 
 #endif  // NODE_LIBGPIOD_HH

@@ -2,14 +2,15 @@
 #define LINE_HH
 
 #include <gpiod.h>
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 
 #include "chip.hh"
 
-class Line : public Nan::ObjectWrap {
+class Line : public Napi::ObjectWrap<Line> {
  public:
-  static NAN_MODULE_INIT(Init);
-  static NAN_METHOD(New);
+  static Napi::Object Init(Napi::Env env, Napi::Object exports);
+  static Napi::Value New(const Napi::CallbackInfo& info);
   gpiod_line *getNativeLine();
   unsigned int getValueCpp();
   void setValueCpp(unsigned int value);
@@ -18,18 +19,18 @@ class Line : public Nan::ObjectWrap {
   explicit Line(Chip *chip, unsigned int pin);
   ~Line();
 
-  static NAN_METHOD(getLineOffset);
-  static NAN_METHOD(getLineName);
-  static NAN_METHOD(getLineConsumer);
+  static Napi::Value getLineOffset(const Napi::CallbackInfo& info);
+  static Napi::Value getLineName(const Napi::CallbackInfo& info);
+  static Napi::Value getLineConsumer(const Napi::CallbackInfo& info);
 
-  static NAN_METHOD(getValue);
-  static NAN_METHOD(setValue);
+  static Napi::Value getValue(const Napi::CallbackInfo& info);
+  static Napi::Value setValue(const Napi::CallbackInfo& info);
 
-  static NAN_METHOD(requestInputMode);
-  static NAN_METHOD(requestOutputMode);
-  static NAN_METHOD(release);
+  static Napi::Value requestInputMode(const Napi::CallbackInfo& info);
+  static Napi::Value requestOutputMode(const Napi::CallbackInfo& info);
+  static Napi::Value release(const Napi::CallbackInfo& info);
 
-  static Nan::Persistent<v8::Function> constructor;
+  static Napi::FunctionReference constructor;
 
   gpiod_line *line;
 };

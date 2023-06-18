@@ -1,25 +1,26 @@
 #include "chip.hh"
 
-Nan::Persistent<v8::Function> Chip::constructor;
+Napi::FunctionReference Chip::constructor;
 
-NAN_MODULE_INIT(Chip::Init) {
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Chip").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
+  Napi::FunctionReference tpl = Napi::Function::New(env, New);
+  tpl->SetClassName(Napi::String::New(env, "Chip"));
 
-  Nan::SetPrototypeMethod(tpl, "getNumberOfLines", getNumberOfLines);
-  Nan::SetPrototypeMethod(tpl, "getChipName", getChipName);
-  Nan::SetPrototypeMethod(tpl, "getChipLabel", getChipLabel);
 
-  constructor.Reset(Nan::GetFunction(tpl).ToLocalChecked());
-  Nan::Set(target, Nan::New("Chip").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
+  InstanceMethod("getNumberOfLines", &getNumberOfLines),
+  InstanceMethod("getChipName", &getChipName),
+  InstanceMethod("getChipLabel", &getChipLabel),
+
+  constructor.Reset(Napi::GetFunction(tpl));
+  (target).Set(Napi::String::New(env, "Chip"), Napi::GetFunction(tpl));
 }
 
 Chip::Chip(const char *device) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   chip = gpiod_chip_open_lookup(device);
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
-  if (!chip) Nan::ThrowError("Unable to open device");
+  if (!chip) Napi::Error::New(env, "Unable to open device").ThrowAsJavaScriptException();
+
 }
 
 Chip::~Chip() {
@@ -31,64 +32,70 @@ Chip::~Chip() {
   chip = NULL;
 }
 
-NAN_METHOD(Chip::New) {
+Napi::Value Chip::New(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   if (info.IsConstructCall()) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-    Nan::Utf8String device(info[0]);
+    std::string device = info[0].As<Napi::String>();
     Chip *obj = new Chip(*device);
     DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
     if ( !obj->chip) return;
     DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
     obj->Wrap(info.This());
-    info.GetReturnValue().Set(info.This());
+    return info.This();
   } else {
     DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
     const int argc = 1;
-    v8::Local<v8::Value> argv[argc] = {info[0]};
-    v8::Local<v8::Function> cons = Nan::New(constructor);
-    info.GetReturnValue().Set(Nan::NewInstance(cons, argc, argv).ToLocalChecked());
+    Napi::Value argv[argc] = {info[0]};
+    Napi::Function cons = Napi::New(env, constructor);
+    return Napi::NewInstance(cons, argc, argv);
   }
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
 }
 
-NAN_METHOD(Chip::getNumberOfLines) {
+Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Chip *obj = Nan::ObjectWrap::Unwrap<Chip>(info.This());
+  Chip *obj = info.This().Unwrap<Chip>();
   if ( !obj->chip) {
-    Nan::ThrowError( "::getNumberOfLines() for chip==NULL");
+    Napi::Error::New(env,  "::getNumberOfLines() for chip==NULL").ThrowAsJavaScriptException();
+
     return;
   }
   int ret = gpiod_chip_num_lines(obj->getNativeChip());
   if(-1 == ret) {
-    Nan::ThrowError( "::getNumberOfLines() failed");
-  } else info.GetReturnValue().Set(ret);
+    Napi::Error::New(env,  "::getNumberOfLines() failed").ThrowAsJavaScriptException();
+
+  } else return ret;
 }
 
-NAN_METHOD(Chip::getChipName) {
+Napi::Value Chip::getChipName(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Chip *obj = Nan::ObjectWrap::Unwrap<Chip>(info.This());
+  Chip *obj = info.This().Unwrap<Chip>();
   if ( !obj->chip) {
-    Nan::ThrowError( "::getChipName() for chip==NULL");
+    Napi::Error::New(env,  "::getChipName() for chip==NULL").ThrowAsJavaScriptException();
+
     return;
   }
   const char *name = gpiod_chip_name(obj->getNativeChip());
   if(!name) {
-    Nan::ThrowError( "::getChipName() failed");
-  } else info.GetReturnValue().Set(Nan::New<v8::String>(name).ToLocalChecked());
+    Napi::Error::New(env,  "::getChipName() failed").ThrowAsJavaScriptException();
+
+  } else return Napi::String::New(env, name);
 }
 
-NAN_METHOD(Chip::getChipLabel) {
+Napi::Value Chip::getChipLabel(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Chip *obj = Nan::ObjectWrap::Unwrap<Chip>(info.This());
+  Chip *obj = info.This().Unwrap<Chip>();
   if ( !obj->chip) {
-    Nan::ThrowError( "::getChipLabel() for chip==NULL");
+    Napi::Error::New(env,  "::getChipLabel() for chip==NULL").ThrowAsJavaScriptException();
+
     return;
   }
   const char *label = gpiod_chip_label(obj->getNativeChip());
   if(!label) {
-    Nan::ThrowError( "::getChipLabel() failed");
-  } else info.GetReturnValue().Set(Nan::New<v8::String>(label).ToLocalChecked());
+    Napi::Error::New(env,  "::getChipLabel() failed").ThrowAsJavaScriptException();
+
+  } else return Napi::String::New(env, label);
 }
 
 gpiod_chip *Chip::getNativeChip() {

@@ -3,19 +3,19 @@
 #include "chip.hh"
 #include "line.hh"
 
-NAN_MODULE_INIT(InitAll) {
-  Nan::Set(target, Nan::New("version").ToLocalChecked(),
-           Nan::GetFunction(Nan::New<v8::FunctionTemplate>(version)).ToLocalChecked());
-  Nan::Set(target, Nan::New("getInstantLineValue").ToLocalChecked(),
-           Nan::GetFunction(Nan::New<v8::FunctionTemplate>(getInstantLineValue)).ToLocalChecked());
-  Nan::Set(target, Nan::New("setInstantLineValue").ToLocalChecked(),
-           Nan::GetFunction(Nan::New<v8::FunctionTemplate>(setInstantLineValue)).ToLocalChecked());
-  Nan::Set(target, Nan::New("usleep").ToLocalChecked(),
-           Nan::GetFunction(Nan::New<v8::FunctionTemplate>(usleep)).ToLocalChecked());
-  Nan::Set(target, Nan::New("readBit").ToLocalChecked(),
-           Nan::GetFunction(Nan::New<v8::FunctionTemplate>(readBit)).ToLocalChecked());
-  Chip::Init(target);
-  Line::Init(target);
+Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
+  (target).Set(Napi::String::New(env, "version"),
+           Napi::GetFunction(Napi::Function::New(env, version)));
+  (target).Set(Napi::String::New(env, "getInstantLineValue"),
+           Napi::GetFunction(Napi::Function::New(env, getInstantLineValue)));
+  (target).Set(Napi::String::New(env, "setInstantLineValue"),
+           Napi::GetFunction(Napi::Function::New(env, setInstantLineValue)));
+  (target).Set(Napi::String::New(env, "usleep"),
+           Napi::GetFunction(Napi::Function::New(env, usleep)));
+  (target).Set(Napi::String::New(env, "readBit"),
+           Napi::GetFunction(Napi::Function::New(env, readBit)));
+  Chip::Init(env, target, module);
+  Line::Init(env, target, module);
 }
 
-NODE_MODULE(NativeExtension, InitAll)
+NODE_API_MODULE(NativeExtension, InitAll)

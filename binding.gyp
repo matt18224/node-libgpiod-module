@@ -10,8 +10,8 @@
                         "src/chip.cc",
                         "src/line.cc"
                     ],
-                    "include_dirs" : [
-                        "<!(node -e \"require('nan')\")"
+                    "include_dirs": [
+                       '<!(node -p "require(\'node-addon-api\').include_dir")'
                     ],
                     "libraries" : [
                         "-lgpiod"

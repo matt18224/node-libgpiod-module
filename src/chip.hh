@@ -2,7 +2,8 @@
 #define CHIP_HH
 
 #include <gpiod.h>
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 
 #define USE_PRINTF 0
 
@@ -12,21 +13,21 @@
 #define DOUT(fmt,args...)
 #endif
 
-class Chip : public Nan::ObjectWrap {
+class Chip : public Napi::ObjectWrap<Chip> {
  public:
-  static NAN_MODULE_INIT(Init);
+  static Napi::Object Init(Napi::Env env, Napi::Object exports);
   gpiod_chip* getNativeChip();
 
  private:
   explicit Chip(const char* device = "0");
   ~Chip();
 
-  static NAN_METHOD(getNumberOfLines);
-  static NAN_METHOD(getChipName);
-  static NAN_METHOD(getChipLabel);
+  static Napi::Value getNumberOfLines(const Napi::CallbackInfo& info);
+  static Napi::Value getChipName(const Napi::CallbackInfo& info);
+  static Napi::Value getChipLabel(const Napi::CallbackInfo& info);
 
-  static NAN_METHOD(New);
-  static Nan::Persistent<v8::Function> constructor;
+  static Napi::Value New(const Napi::CallbackInfo& info);
+  static Napi::FunctionReference constructor;
 
   gpiod_chip *chip;
 };

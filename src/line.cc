@@ -1,30 +1,31 @@
 #include "line.hh"
 
-Nan::Persistent<v8::Function> Line::constructor;
+Napi::FunctionReference Line::constructor;
 
-NAN_MODULE_INIT(Line::Init) {
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Line").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+Napi::Object Line::Init(Napi::Env env, Napi::Object exports) {
+  Napi::FunctionReference tpl = Napi::Function::New(env, New);
+  tpl->SetClassName(Napi::String::New(env, "Line"));
 
-  Nan::SetPrototypeMethod(tpl, "getLineOffset", getLineOffset);
-  Nan::SetPrototypeMethod(tpl, "getLineName", getLineName);
-  Nan::SetPrototypeMethod(tpl, "getLineConsumer", getLineConsumer);
-  Nan::SetPrototypeMethod(tpl, "getValue", getValue);
-  Nan::SetPrototypeMethod(tpl, "setValue", setValue);
-  Nan::SetPrototypeMethod(tpl, "requestInputMode", requestInputMode);
-  Nan::SetPrototypeMethod(tpl, "requestOutputMode", requestOutputMode);
-  Nan::SetPrototypeMethod(tpl, "release", release);
 
-  constructor.Reset(Nan::GetFunction(tpl).ToLocalChecked());
-  Nan::Set(target, Nan::New("Line").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
+  InstanceMethod("getLineOffset", &getLineOffset),
+  InstanceMethod("getLineName", &getLineName),
+  InstanceMethod("getLineConsumer", &getLineConsumer),
+  InstanceMethod("getValue", &getValue),
+  InstanceMethod("setValue", &setValue),
+  InstanceMethod("requestInputMode", &requestInputMode),
+  InstanceMethod("requestOutputMode", &requestOutputMode),
+  InstanceMethod("release", &release),
+
+  constructor.Reset(Napi::GetFunction(tpl));
+  (target).Set(Napi::String::New(env, "Line"), Napi::GetFunction(tpl));
 }
 
 Line::Line(Chip *chip, unsigned int pin) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   line = gpiod_chip_get_line(chip->getNativeChip(), pin);
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, line);
-  if (!line) Nan::ThrowError("Unable to open GPIO line ");
+  if (!line) Napi::Error::New(env, "Unable to open GPIO line ").ThrowAsJavaScriptException();
+
 }
 
 Line::~Line() {
@@ -36,63 +37,67 @@ Line::~Line() {
   line = NULL;
 }
 
-NAN_METHOD(Line::New) {
+Napi::Value Line::New(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   if (info.IsConstructCall()) {
     DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-    Chip *chip = Nan::ObjectWrap::Unwrap<Chip>(Nan::To<v8::Object>(info[0]).ToLocalChecked());
-    unsigned int pin = Nan::To<unsigned int>(info[1]).FromJust();
+    Chip *chip = info[0].To<Napi::Object>().Unwrap<Chip>();
+    unsigned int pin = Napi::To<unsigned int>(info[1]);
     Line *obj = new Line(chip, pin);
     DOUT( "%s %s(%d):%d %p\n", __FILE__, __FUNCTION__, pin, __LINE__, obj);
     if ( !obj->line) return;
     DOUT( "%s %s(%d):%d %p->%p\n", __FILE__, __FUNCTION__, pin, __LINE__, obj, obj->line);
     obj->Wrap(info.This());
-    info.GetReturnValue().Set(info.This());
+    return info.This();
   } else {
     const int argc = 1;
     DOUT( "%s %s():%d !construct\n", __FILE__, __FUNCTION__, __LINE__);
-    v8::Local<v8::Value> argv[argc] = {info[0]};
-    v8::Local<v8::Function> cons = Nan::New(constructor);
-    info.GetReturnValue().Set(Nan::NewInstance(cons, argc, argv).ToLocalChecked());
+    Napi::Value argv[argc] = {info[0]};
+    Napi::Function cons = Napi::New(env, constructor);
+    return Napi::NewInstance(cons, argc, argv);
   }
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
 }
 
-NAN_METHOD(Line::getLineOffset) {
+Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
+  Line *obj = info.This().Unwrap<Line>();
   if ( !obj->line) {
-    Nan::ThrowError( "::getLineOffset() for line==NULL");
+    Napi::Error::New(env,  "::getLineOffset() for line==NULL").ThrowAsJavaScriptException();
+
     return;
   }
   int ret = gpiod_line_offset(obj->getNativeLine());
   if(-1 == ret) {
-    Nan::ThrowError( "::getLineOffset() failed");
-  } else info.GetReturnValue().Set(ret);
+    Napi::Error::New(env,  "::getLineOffset() failed").ThrowAsJavaScriptException();
+
+  } else return ret;
 }
 
-NAN_METHOD(Line::getLineName) {
+Napi::Value Line::getLineName(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
+  Line *obj = info.This().Unwrap<Line>();
   if ( !obj->line) {
-    Nan::ThrowError( "::getLineName() for line==NULL");
+    Napi::Error::New(env,  "::getLineName() for line==NULL").ThrowAsJavaScriptException();
+
     return;
   }
   const char *name = gpiod_line_name(obj->getNativeLine());
-  if(!name) info.GetReturnValue().Set(Nan::Undefined());
-  else info.GetReturnValue().Set(Nan::New<v8::String>(name).ToLocalChecked());
+  if(!name) return env.Undefined();
+  else return Napi::String::New(env, name);
 }
 
-NAN_METHOD(Line::getLineConsumer) {
+Napi::Value Line::getLineConsumer(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
+  Line *obj = info.This().Unwrap<Line>();
   if ( !obj->line) {
-    Nan::ThrowError( "::getLineConsumer() for line==NULL");
+    Napi::Error::New(env,  "::getLineConsumer() for line==NULL").ThrowAsJavaScriptException();
+
     return;
   }
   const char *name = gpiod_line_consumer(obj->getNativeLine());
-  if(!name) info.GetReturnValue().Set(Nan::Undefined());
-  else info.GetReturnValue().Set(Nan::New<v8::String>(name).ToLocalChecked());
+  if(!name) return env.Undefined();
+  else return Napi::String::New(env, name);
 }
 
 unsigned int Line::getValueCpp() {
@@ -115,64 +120,71 @@ void Line::setValueCpp(unsigned int value) {
   }
 }
 
-NAN_METHOD(Line::getValue) {
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
+Napi::Value Line::getValue(const Napi::CallbackInfo& info) {
+  Line *obj = info.This().Unwrap<Line>();
   try {
     unsigned int ret = obj->getValueCpp();
-    info.GetReturnValue().Set(ret);
+    return ret;
   } catch (const std::runtime_error& e) {
-    Nan::ThrowError(e.what());
+    Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
+
   }
 }
 
-NAN_METHOD(Line::setValue) {
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
-  unsigned int value = Nan::To<unsigned int>(info[0]).FromJust();
+Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
+  Line *obj = info.This().Unwrap<Line>();
+  unsigned int value = Napi::To<unsigned int>(info[0]);
   try {
     obj->setValueCpp(value);
   } catch (const std::runtime_error& e) {
-    Nan::ThrowError(e.what());
+    Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
+
   }
 }
 
-NAN_METHOD(Line::requestInputMode) {
+Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
+  Line *obj = info.This().Unwrap<Line>();
   if (!obj->line) {
-    Nan::ThrowError( "::requestInputMode() for line==NULL");
+    Napi::Error::New(env,  "::requestInputMode() for line==NULL").ThrowAsJavaScriptException();
+
     return;
   }
-  Nan::Utf8String consumer(info[0]);
+  std::string consumer = info[0].As<Napi::String>();
   if (-1 == gpiod_line_request_input(obj->getNativeLine(), *consumer))
-    Nan::ThrowError( "::requestInputMode() failed");
+    Napi::Error::New(env,  "::requestInputMode() failed").ThrowAsJavaScriptException();
+
 }
 
-NAN_METHOD(Line::requestOutputMode) {
+Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
+  Line *obj = info.This().Unwrap<Line>();
   if (!obj->line) {
-      Nan::ThrowError( "::requestOutputMode() for line==NULL");
+      Napi::Error::New(env,  "::requestOutputMode() for line==NULL").ThrowAsJavaScriptException();
+
       return;
     }
   unsigned int value = 0;
-  v8::Local<v8::Value> defaultValue = info[0];
-  if (!defaultValue->IsUndefined() && defaultValue->IsNumber()) {
-    unsigned int val = Nan::To<unsigned int>(defaultValue).FromJust();
+  Napi::Value defaultValue = info[0];
+  if (!defaultValue->IsUndefined() && defaultValue.IsNumber()) {
+    unsigned int val = Napi::To<unsigned int>(defaultValue);
     if (val > 1) {
-      Nan::ThrowError( "::requestOutputMode() value is not in {0,1} range");
+      Napi::Error::New(env,  "::requestOutputMode() value is not in {0,1} range").ThrowAsJavaScriptException();
+
       return;
     }
     value = val;
   }
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
-  Nan::Utf8String consumer(info[1]);
+  std::string consumer = info[1].As<Napi::String>();
   if (-1 == gpiod_line_request_output(obj->getNativeLine(), *consumer, value))
-    Nan::ThrowError( "::requestOutputMode() failed");
+    Napi::Error::New(env,  "::requestOutputMode() failed").ThrowAsJavaScriptException();
+
 }
 
 
-NAN_METHOD(Line::release) {
-  Line *obj = Nan::ObjectWrap::Unwrap<Line>(info.This());
+Napi::Value Line::release(const Napi::CallbackInfo& info) {
+  Line *obj = info.This().Unwrap<Line>();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   if ( !obj->getNativeLine()) return;
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
