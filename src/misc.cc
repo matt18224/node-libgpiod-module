@@ -21,15 +21,14 @@ Napi::Value version(const Napi::CallbackInfo& info) {
 
 Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  std::string device = info[0].As<Napi::String>();
-  unsigned int offset = Napi::To<unsigned int>(info[1]);
+  std::string device = info[0].As<Napi::String>().Utf8Value();
+  unsigned int offset = info[1].As<Napi::Number>().Uint32Value();
   bool active_low = info[2].As<Napi::Boolean>().Value();
-  std::string consumer = info[3].As<Napi::String>();
+  std::string consumer = info[3].As<Napi::String>().Utf8Value();
 
   int value = -1;
-  if (-1 == (value = gpiod_ctxless_get_value(*device, offset, active_low, *consumer))) {
+  if (-1 == (value = gpiod_ctxless_get_value(device.c_str(), offset, active_low, consumer.c_str()))) {
     Napi::Error::New(env, "Unable to get instant value").ThrowAsJavaScriptException();
-
     return env.Null();
   }
 
@@ -38,20 +37,26 @@ Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
 
 Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  std::string device = info[0].As<Napi::String>();
-  unsigned int offset = Napi::To<unsigned int>(info[1]);
-  unsigned int value = Napi::To<unsigned int>(info[2]);
+  std::string device = info[0].As<Napi::String>().Utf8Value();
+  unsigned int offset = info[1].As<Napi::Number>().Uint32Value();
+  unsigned int value = info[2].As<Napi::Number>().Uint32Value();
   bool active_low = info[3].As<Napi::Boolean>().Value();
-  std::string consumer = info[4].As<Napi::String>();
+  std::string consumer = info[4].As<Napi::String>().Utf8Value();
 
-  if (-1 == gpiod_ctxless_set_value(*device, offset, value, active_low, *consumer, NULL, NULL)) {
-    Napi::Error::New(env, "Unable to get instant value").ThrowAsJavaScriptException();
-
+  if (-1 == gpiod_ctxless_set_value(device.c_str(), offset, value, active_low, consumer.c_str(), NULL, NULL)) {
+    Napi::Error::New(env, "Unable to set instant value").ThrowAsJavaScriptException();
     return env.Null();
   }
 
   return Napi::Boolean::New(env, true);
 }
+
+In this code:
+
+    info[0].As<Napi::String>().Utf8Value() is used to get a std::string from a Napi::Value.
+    info[1].As<Napi::Number>().Uint32Value() is used to get an unsigned int from
+
+
 
 // Assumes Line class is defined and included.
 
