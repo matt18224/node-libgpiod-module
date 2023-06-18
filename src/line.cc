@@ -40,24 +40,31 @@ Line::~Line() {
 Napi::Value Line::New(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  if (info.IsConstructCall()) {
-    DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-    Chip *chip = info[0].To<Napi::Object>().Unwrap<Chip>();
-    unsigned int pin = Napi::To<unsigned int>(info[1]);
-    Line *obj = new Line(chip, pin);
-    DOUT( "%s %s(%d):%d %p\n", __FILE__, __FUNCTION__, pin, __LINE__, obj);
-    if ( !obj->line) return env.Null();
-    DOUT( "%s %s(%d):%d %p->%p\n", __FILE__, __FUNCTION__, pin, __LINE__, obj, obj->line);
-    obj->Wrap(info.This());
-    return info.This();
-  } else {
-    const int argc = 1;
-    DOUT( "%s %s():%d !construct\n", __FILE__, __FUNCTION__, __LINE__);
-    Napi::Value argv[argc] = {info[0]};
-    Napi::Function cons = Napi::New(env, constructor);
-    return Napi::NewInstance(cons, argc, argv);
+
+  // Ensure it's being called as a constructor
+  if (!info.IsConstructCall()) {
+    Napi::TypeError::New(env, "Class constructors cannot be invoked without 'new'")
+      .ThrowAsJavaScriptException();
+    return env.Null();
   }
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
+    DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
+
+    Chip *chip = Chip::Unwrap(info[0].As<Napi::Object>());
+    unsigned int pin = info[1].As<Napi::Number>().Uint32Value()
+    Line *obj = new Line(chip, pin);
+
+    if ( !obj->line) return env.Null();
+    if (!obj->chip) {
+      delete obj;  // delete the object to avoid memory leak
+      Napi::TypeError::New(env, "Unable to open device")
+        .ThrowAsJavaScriptException();
+      return env.Null();
+    }
+
+    DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
+    obj->Wrap(info.This());
+
+    return info.This();
 }
 
 Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
