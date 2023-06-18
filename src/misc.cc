@@ -1,6 +1,6 @@
 #include "misc.hh"
 
-Napi::Value usleep(const Napi::CallbackInfo& info) {
+Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
   if (info.Length() < 1 || !info[0].IsNumber()) {
     Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
 

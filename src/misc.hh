@@ -12,7 +12,7 @@
 Napi::Value version(const Napi::CallbackInfo& info);
 Napi::Value getInstantLineValue(const Napi::CallbackInfo& info);
 Napi::Value setInstantLineValue(const Napi::CallbackInfo& info);
-Napi::Value usleep(const Napi::CallbackInfo& info);
+Napi::Value usleepWrapper(const Napi::CallbackInfo& info);
 Napi::Value readBit(const Napi::CallbackInfo& info);
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports);
