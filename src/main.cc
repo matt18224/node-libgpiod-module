@@ -4,18 +4,16 @@
 #include "line.hh"
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
-  (target).Set(Napi::String::New(env, "version"),
-           Napi::GetFunction(Napi::Function::New(env, version)));
-  (target).Set(Napi::String::New(env, "getInstantLineValue"),
-           Napi::GetFunction(Napi::Function::New(env, getInstantLineValue)));
-  (target).Set(Napi::String::New(env, "setInstantLineValue"),
-           Napi::GetFunction(Napi::Function::New(env, setInstantLineValue)));
-  (target).Set(Napi::String::New(env, "usleep"),
-           Napi::GetFunction(Napi::Function::New(env, usleep)));
-  (target).Set(Napi::String::New(env, "readBit"),
-           Napi::GetFunction(Napi::Function::New(env, readBit)));
-  Chip::Init(env, target, module);
-  Line::Init(env, target, module);
+  exports.Set("version", Napi::Function::New(env, version));
+  exports.Set("getInstantLineValue", Napi::Function::New(env, getInstantLineValue));
+  exports.Set("setInstantLineValue", Napi::Function::New(env, setInstantLineValue));
+  exports.Set("usleep", Napi::Function::New(env, usleep));
+  exports.Set("readBit", Napi::Function::New(env, readBit));
+
+  Chip::Init(env, exports);
+  Line::Init(env, exports);
+
+  return exports;
 }
 
 NODE_API_MODULE(NativeExtension, InitAll)
