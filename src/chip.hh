@@ -22,6 +22,8 @@ class Chip : public Napi::ObjectWrap<Chip> {
   explicit Chip(const char* device = "0");
   ~Chip();
 
+  static Napi::FunctionReference constructor;
+
   static Napi::Value getNumberOfLines(const Napi::CallbackInfo& info);
   static Napi::Value getChipName(const Napi::CallbackInfo& info);
   static Napi::Value getChipLabel(const Napi::CallbackInfo& info);

@@ -3,21 +3,22 @@
 Napi::FunctionReference Line::constructor;
 
 Napi::Object Line::Init(Napi::Env env, Napi::Object exports) {
-  Napi::FunctionReference tpl = Napi::Function::New(env, New);
-  tpl->SetClassName(Napi::String::New(env, "Line"));
+  Napi::Function func = DefineClass(env, "Line", {
+    InstanceMethod("getLineOffset", &Line::getLineOffset),
+    InstanceMethod("getLineName", &Line::getLineName),
+    InstanceMethod("getLineConsumer", &Line::getLineConsumer),
+    InstanceMethod("getValue", &Line::getValue),
+    InstanceMethod("setValue", &Line::setValue),
+    InstanceMethod("requestInputMode", &Line::requestInputMode),
+    InstanceMethod("requestOutputMode", &Line::requestOutputMode),
+    InstanceMethod("release", &Line::release),
+  });
 
+  constructor = Napi::Persistent(func);
+  constructor.SuppressDestruct(); // Needed to avoid crashes when the environment is cleaned up
 
-  InstanceMethod("getLineOffset", &getLineOffset),
-  InstanceMethod("getLineName", &getLineName),
-  InstanceMethod("getLineConsumer", &getLineConsumer),
-  InstanceMethod("getValue", &getValue),
-  InstanceMethod("setValue", &setValue),
-  InstanceMethod("requestInputMode", &requestInputMode),
-  InstanceMethod("requestOutputMode", &requestOutputMode),
-  InstanceMethod("release", &release),
-
-  constructor.Reset(Napi::GetFunction(tpl));
-  (target).Set(Napi::String::New(env, "Line"), Napi::GetFunction(tpl));
+  exports.Set("Line", func);
+  return exports;
 }
 
 Line::Line(Chip *chip, unsigned int pin) {

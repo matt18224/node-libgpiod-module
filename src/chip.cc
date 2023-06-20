@@ -3,16 +3,18 @@
 Napi::FunctionReference Chip::constructor;
 
 Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
-  Napi::FunctionReference tpl = Napi::Function::New(env, New);
-  tpl->SetClassName(Napi::String::New(env, "Chip"));
 
-
+  Napi::Function func = DefineClass(env, "Chip", {
   InstanceMethod("getNumberOfLines", &getNumberOfLines),
   InstanceMethod("getChipName", &getChipName),
   InstanceMethod("getChipLabel", &getChipLabel),
+  });
 
-  constructor.Reset(Napi::GetFunction(tpl));
-  (target).Set(Napi::String::New(env, "Chip"), Napi::GetFunction(tpl));
+  constructor = Napi::Persistent(func);
+  constructor.SuppressDestruct(); // Needed to avoid crashes when the environment is cleaned up
+
+  exports.Set("Chip", func);
+  return exports;
 }
 
 Chip::Chip(Napi::Env env, const char *device) {
