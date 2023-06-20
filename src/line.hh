@@ -19,8 +19,6 @@ class Line : public Napi::ObjectWrap<Line> {
   explicit Line(Chip *chip, unsigned int pin);
   ~Line();
 
-  static Napi::FunctionReference constructor;
-
   static Napi::Value getLineOffset(const Napi::CallbackInfo& info);
   static Napi::Value getLineName(const Napi::CallbackInfo& info);
   static Napi::Value getLineConsumer(const Napi::CallbackInfo& info);
