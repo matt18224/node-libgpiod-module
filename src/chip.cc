@@ -36,29 +36,9 @@ Chip::~Chip() {
 
 Napi::Value Chip::New(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-
-  // Ensure it's being called as a constructor
-  if (!info.IsConstructCall()) {
-    Napi::TypeError::New(env, "Class constructors cannot be invoked without 'new'")
-      .ThrowAsJavaScriptException();
-    return env.Null();
-  }
-
-  std::string device = info[0].As<Napi::String>();
-  Chip *obj = new Chip(env, *device);
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
-
-  if (!obj->chip) {
-    delete obj;  // delete the object to avoid memory leak
-    Napi::TypeError::New(env, "Unable to open device")
-      .ThrowAsJavaScriptException();
-    return env.Null();
-  }
-
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
+  std::string device = info[0].As<Napi::String>().Utf8Value();
+  Chip* obj = new Chip(env, device.c_str());
   obj->Wrap(info.This());
-
   return info.This();
 }
 
