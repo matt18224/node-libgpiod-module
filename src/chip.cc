@@ -11,18 +11,27 @@ Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
   });
 
   constructor = Napi::Persistent(func);
-  constructor.SuppressDestruct(); // Needed to avoid crashes when the environment is cleaned up
 
   exports.Set("Chip", func);
+  env.SetInstanceData<Napi::FunctionReference>(constructor);
   return exports;
 }
 
-Chip::Chip(Napi::Env env, const char *device) {
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  chip = gpiod_chip_open_lookup(device);
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
-  if (!chip) Napi::Error::New(env, "Unable to open device").ThrowAsJavaScriptException();
+Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
+  Napi::Env env = info.Env();
 
+  if (info.Length() < 1 || !info[0].IsString()) {
+    Napi::TypeError::New(env, "Expected string argument for device").ThrowAsJavaScriptException();
+    return;
+  }
+
+  std::string device = info[0].As<Napi::String>();
+
+  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
+  chip = gpiod_chip_open_lookup(device.c_str());
+  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
+
+  if (!chip) Napi::Error::New(env, "Unable to open device").ThrowAsJavaScriptException();
 }
 
 Chip::~Chip() {
@@ -36,10 +45,10 @@ Chip::~Chip() {
 
 Napi::Value Chip::New(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  Napi::FunctionReference* constructor =
+      info.Env().GetInstanceData<Napi::FunctionReference>()
   std::string device = info[0].As<Napi::String>().Utf8Value();
-  Chip* obj = new Chip(env, device.c_str());
-  obj->Wrap(info.This());
-  return info.This();
+  return constructor->New({ Napi::String::New(info.Env(), device.c_str()) });
 }
 
 Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo& info) {

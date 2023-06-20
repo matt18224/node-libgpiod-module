@@ -19,7 +19,7 @@ class Chip : public Napi::ObjectWrap<Chip> {
   gpiod_chip* getNativeChip();
 
  private:
-  explicit Chip(Napi::Env env, const char* device = "0");
+  explicit Chip(const Napi::CallbackInfo& info);
   ~Chip();
 
   static Napi::Value getNumberOfLines(const Napi::CallbackInfo& info);
