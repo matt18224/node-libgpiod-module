@@ -5,12 +5,13 @@ Napi::FunctionReference Chip::constructor;
 Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
 
   Napi::Function func = DefineClass(env, "Chip", {
-  InstanceMethod("getNumberOfLines", &getNumberOfLines),
-  InstanceMethod("getChipName", &getChipName),
-  InstanceMethod("getChipLabel", &getChipLabel),
+  InstanceMethod<&Chip::getNumberOfLines>("getNumberOfLines", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+  InstanceMethod<&Chip::getChipName>("getChipName", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+  InstanceMethod<&Chip::getChipLabel>("getChipLabel", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
   });
 
-  constructor = Napi::Persistent(func);
+  Napi::FunctionReference* constructor = new Napi::FunctionReference();
+  *constructor = Napi::Persistent(func);
 
   exports.Set("Chip", func);
   env.SetInstanceData<Napi::FunctionReference>(constructor);
