@@ -46,7 +46,7 @@ Chip::~Chip() {
 Napi::Value Chip::New(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   Napi::FunctionReference* constructor =
-      info.Env().GetInstanceData<Napi::FunctionReference>()
+      info.Env().GetInstanceData<Napi::FunctionReference>();
   std::string device = info[0].As<Napi::String>().Utf8Value();
   return constructor->New({ Napi::String::New(info.Env(), device.c_str()) });
 }
