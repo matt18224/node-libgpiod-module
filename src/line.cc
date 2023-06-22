@@ -44,7 +44,10 @@ Line::Line(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Line>(info) {
   unsigned int pin = info[1].As<Napi::Number>().Uint32Value();
   line = gpiod_chip_get_line(chip->getNativeChip(), pin);
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, line);
-  if (!line) Napi::Error::New(env, "Unable to open GPIO line ").ThrowAsJavaScriptException();
+  if (!line){
+    Napi::Error::New(env, "Unable to open GPIO line ").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 }
 
 Line::~Line() {
@@ -66,6 +69,7 @@ Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
   int ret = gpiod_line_offset(obj->getNativeLine());
   if(-1 == ret) {
     Napi::Error::New(env, "::getLineOffset() failed").ThrowAsJavaScriptException();
+    return env.Null();
   } else return Napi::Number::New(env, ret);
 }
 
@@ -135,6 +139,7 @@ Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
     obj->setValueCpp(value);
   } catch (const std::runtime_error& e) {
     Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
+    return env.Null();
   }
 }
 
@@ -149,6 +154,7 @@ Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
   std::string consumer = info[0].As<Napi::String>().Utf8Value();
   if (-1 == gpiod_line_request_input(obj->getNativeLine(), consumer.c_str()))
     Napi::Error::New(env, "::requestInputMode() failed").ThrowAsJavaScriptException();
+    return env.Null();
 }
 
 Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
@@ -173,6 +179,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
   std::string consumer = info[1].As<Napi::String>().Utf8Value();
   if (-1 == gpiod_line_request_output(obj->getNativeLine(), consumer.c_str(), value))
     Napi::Error::New(env, "::requestOutputMode() failed").ThrowAsJavaScriptException();
+    return env.Null();
 }
 
 Napi::Value Line::release(const Napi::CallbackInfo& info) {
