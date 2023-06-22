@@ -5,7 +5,7 @@
 #include <napi.h>
 #include <uv.h>
 
-#define USE_PRINTF 0
+#define USE_PRINTF 1
 
 #if USE_PRINTF
 #define DOUT(fmt,args...) printf(fmt,##args)
