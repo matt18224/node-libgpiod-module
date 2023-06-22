@@ -35,7 +35,7 @@ Napi::Value Chip::CreateNewInstance(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
 
-  return constructor->New({info[0].ToString()});
+  return constructor->New({info[0]});
 }
 
 Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
@@ -47,7 +47,7 @@ Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
   if(info[0].IsNumber()) {
     device = info[0].ToString();
   } else if(info[0].IsString()) {
-    device = info[0];
+    device = info[0].As<Napi::String>;
   } else {
     Napi::Error::New(env, "Wrong argument type. Expected string or number").ThrowAsJavaScriptException();
   }
