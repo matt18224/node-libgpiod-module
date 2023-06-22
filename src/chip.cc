@@ -29,6 +29,8 @@ Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
     // the add-on is unloaded using the `delete` operator, but it is also
     // possible to supply a custom deleter.
     env.SetInstanceData<Napi::FunctionReference>(constructor);
+
+    return exports;
 }
 
 Napi::Value Chip::New(const Napi::CallbackInfo& info) {
@@ -36,9 +38,9 @@ Napi::Value Chip::New(const Napi::CallbackInfo& info) {
   Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
   std::string device = info[0].As<Napi::String>();
 
-  return constructor->New({
-        device
-    });
+  Napi::Value args[1] = { Napi::String::New(info.Env(), device) };
+
+  return constructor->New({ args, 1 });
 }
 
 Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
@@ -46,7 +48,7 @@ Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
   Napi::HandleScope scope(env);
 
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  std::string device = info[0].As<Napi::String>().Utf8Value();
+  std::string device = info[0].As<Napi::String>();
   chip = gpiod_chip_open_lookup(device.c_str());
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
   if (!chip) Napi::Error::New(env, "Unable to open device").ThrowAsJavaScriptException();
