@@ -9,7 +9,7 @@ Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod<&Chip::getNumberOfLines>("getNumberOfLines", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
         InstanceMethod<&Chip::getChipName>("getChipName", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
         InstanceMethod<&Chip::getChipLabel>("getChipLabel", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
-        StaticMethod<&Chip::New>("CreateNewInstance", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
+        StaticMethod<&Chip::CreateNewInstance>("CreateNewInstance", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
     });
 
     Napi::FunctionReference* constructor = new Napi::FunctionReference();
