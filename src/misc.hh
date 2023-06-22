@@ -1,11 +1,8 @@
 #ifndef NODE_LIBGPIOD_HH
 #define NODE_LIBGPIOD_HH
 
-#include <iostream>
-
 #include <gpiod.h>
 #include <napi.h>
-#include <uv.h>
 #include <unistd.h>
 #include "line.hh"
 

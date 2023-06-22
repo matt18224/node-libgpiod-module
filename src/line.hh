@@ -10,14 +10,14 @@
 class Line : public Napi::ObjectWrap<Line> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
-  static Napi::Value New(const Napi::CallbackInfo& info);
+  Line(const Napi::CallbackInfo& info);
+
   gpiod_line *getNativeLine();
   unsigned int getValueCpp();
   void setValueCpp(unsigned int value);
 
  private:
-  explicit Line(Chip *chip, unsigned int pin);
-  ~Line();
+  static Napi::FunctionReference constructor;
 
   static Napi::Value getLineOffset(const Napi::CallbackInfo& info);
   static Napi::Value getLineName(const Napi::CallbackInfo& info);
@@ -29,8 +29,6 @@ class Line : public Napi::ObjectWrap<Line> {
   static Napi::Value requestInputMode(const Napi::CallbackInfo& info);
   static Napi::Value requestOutputMode(const Napi::CallbackInfo& info);
   static Napi::Value release(const Napi::CallbackInfo& info);
-
-  static Napi::FunctionReference constructor;
 
   gpiod_line *line;
 };

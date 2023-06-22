@@ -15,18 +15,17 @@
 
 class Chip : public Napi::ObjectWrap<Chip> {
  public:
-   explicit Chip(const Napi::CallbackInfo& info);
-   ~Chip();
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
+  Chip(const Napi::CallbackInfo& info);
+
   gpiod_chip* getNativeChip();
 
  private:
+  static Napi::FunctionReference constructor;
+
   static Napi::Value getNumberOfLines(const Napi::CallbackInfo& info);
   static Napi::Value getChipName(const Napi::CallbackInfo& info);
   static Napi::Value getChipLabel(const Napi::CallbackInfo& info);
-
-  static Napi::Value New(const Napi::CallbackInfo& info);
-  static Napi::FunctionReference constructor;
 
   gpiod_chip *chip;
 };

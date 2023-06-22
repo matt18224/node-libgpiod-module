@@ -21,75 +21,45 @@ Napi::Object Line::Init(Napi::Env env, Napi::Object exports) {
   return exports;
 }
 
-Line::Line(Chip *chip, unsigned int pin) {
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  line = gpiod_chip_get_line(chip->getNativeChip(), pin);
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, line);
-  if (!line) Napi::Error::New(env, "Unable to open GPIO line ").ThrowAsJavaScriptException();
-
-}
-
-Line::~Line() {
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  if ( !line) return;
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  gpiod_line_close_chip(line);
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  line = NULL;
-}
-
-Napi::Value Line::New(const Napi::CallbackInfo& info) {
+Line::Line(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Line>(info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
 
-  // Ensure it's being called as a constructor
-  if (!info.IsConstructCall()) {
-    Napi::TypeError::New(env, "Class constructors cannot be invoked without 'new'")
-      .ThrowAsJavaScriptException();
-    return env.Null();
-  }
-    DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
+  Chip *chip = Napi::ObjectWrap<Chip>::Unwrap(info[0].As<Napi::Object>());
+  unsigned int pin = info[1].As<Napi::Number>().Uint32Value();
+  line = gpiod_chip_get_line(chip->getNativeChip(), pin);
+  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, line);
+  if (!line) Napi::Error::New(env, "Unable to open GPIO line ").ThrowAsJavaScriptException();
+}
 
-    Chip *chip = Chip::Unwrap(info[0].As<Napi::Object>());
-    unsigned int pin = info[1].As<Napi::Number>().Uint32Value()
-    Line *obj = new Line(chip, pin);
-
-    if ( !obj->line) return env.Null();
-    if (!obj->chip) {
-      delete obj;  // delete the object to avoid memory leak
-      Napi::TypeError::New(env, "Unable to open device")
-        .ThrowAsJavaScriptException();
-      return env.Null();
-    }
-
-    DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
-    obj->Wrap(info.This());
-
-    return info.This();
+Line::~Line() {
+  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, line);
+  if ( !line) return;
+  gpiod_line_close_chip(line);
+  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, line);
+  line = NULL;
 }
 
 Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = info.This().Unwrap<Line>();
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
   if ( !obj->line) {
-    Napi::Error::New(env,  "::getLineOffset() for line==NULL").ThrowAsJavaScriptException();
-
+    Napi::Error::New(env, "::getLineOffset() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
   }
   int ret = gpiod_line_offset(obj->getNativeLine());
   if(-1 == ret) {
-    Napi::Error::New(env,  "::getLineOffset() failed").ThrowAsJavaScriptException();
-    return env.Null();
-  } else return ret;
+    Napi::Error::New(env, "::getLineOffset() failed").ThrowAsJavaScriptException();
+  } else return Napi::Number::New(env, ret);
 }
 
 Napi::Value Line::getLineName(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = info.This().Unwrap<Line>();
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
   if ( !obj->line) {
-    Napi::Error::New(env,  "::getLineName() for line==NULL").ThrowAsJavaScriptException();
+    Napi::Error::New(env, "::getLineName() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
   }
   const char *name = gpiod_line_name(obj->getNativeLine());
@@ -100,9 +70,9 @@ Napi::Value Line::getLineName(const Napi::CallbackInfo& info) {
 Napi::Value Line::getLineConsumer(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = info.This().Unwrap<Line>();
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
   if ( !obj->line) {
-    Napi::Error::New(env,  "::getLineConsumer() for line==NULL").ThrowAsJavaScriptException();
+    Napi::Error::New(env, "::getLineConsumer() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
   }
   const char *name = gpiod_line_consumer(obj->getNativeLine());
@@ -132,74 +102,67 @@ void Line::setValueCpp(unsigned int value) {
 
 Napi::Value Line::getValue(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  Line *obj = info.This().Unwrap<Line>();
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
   try {
     unsigned int ret = obj->getValueCpp();
-    return ret;
+    return Napi::Number::New(env, ret);
   } catch (const std::runtime_error& e) {
     Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
-
+    return env.Null();
   }
 }
 
 Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  Line *obj = info.This().Unwrap<Line>();
-  unsigned int value = Napi::To<unsigned int>(info[0]);
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  unsigned int value = info[0].As<Napi::Number>().Uint32Value();
   try {
     obj->setValueCpp(value);
   } catch (const std::runtime_error& e) {
     Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
-
   }
 }
 
 Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = info.This().Unwrap<Line>();
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
   if (!obj->line) {
-    Napi::Error::New(env,  "::requestInputMode() for line==NULL").ThrowAsJavaScriptException();
-
-        return env.Null();
+    Napi::Error::New(env, "::requestInputMode() for line==NULL").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  std::string consumer = info[0].As<Napi::String>();
-  if (-1 == gpiod_line_request_input(obj->getNativeLine(), *consumer))
-    Napi::Error::New(env,  "::requestInputMode() failed").ThrowAsJavaScriptException();
-
+  std::string consumer = info[0].As<Napi::String>().Utf8Value();
+  if (-1 == gpiod_line_request_input(obj->getNativeLine(), consumer.c_str()))
+    Napi::Error::New(env, "::requestInputMode() failed").ThrowAsJavaScriptException();
 }
 
 Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = info.This().Unwrap<Line>();
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
   if (!obj->line) {
-      Napi::Error::New(env,  "::requestOutputMode() for line==NULL").ThrowAsJavaScriptException();
-
-          return env.Null();
-    }
+    Napi::Error::New(env, "::requestOutputMode() for line==NULL").ThrowAsJavaScriptException();
+    return env.Null();
+  }
   unsigned int value = 0;
   Napi::Value defaultValue = info[0];
   if (!defaultValue->IsUndefined() && defaultValue.IsNumber()) {
-    unsigned int val = Napi::To<unsigned int>(defaultValue);
+    unsigned int val = defaultValue.As<Napi::Number>().Uint32Value();
     if (val > 1) {
-      Napi::Error::New(env,  "::requestOutputMode() value is not in {0,1} range").ThrowAsJavaScriptException();
-
-          return env.Null();
+      Napi::Error::New(env, "::requestOutputMode() value is not in {0,1} range").ThrowAsJavaScriptException();
+      return env.Null();
     }
     value = val;
   }
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
-  std::string consumer = info[1].As<Napi::String>();
-  if (-1 == gpiod_line_request_output(obj->getNativeLine(), *consumer, value))
-    Napi::Error::New(env,  "::requestOutputMode() failed").ThrowAsJavaScriptException();
-
+  std::string consumer = info[1].As<Napi::String>().Utf8Value();
+  if (-1 == gpiod_line_request_output(obj->getNativeLine(), consumer.c_str(), value))
+    Napi::Error::New(env, "::requestOutputMode() failed").ThrowAsJavaScriptException();
 }
-
 
 Napi::Value Line::release(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  Line *obj = info.This().Unwrap<Line>();
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   if ( !obj->getNativeLine())     return env.Null();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);

@@ -2,9 +2,9 @@
 
 Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+
   if (info.Length() < 1 || !info[0].IsNumber()) {
     Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
-
     return env.Null();
   }
 
@@ -21,6 +21,7 @@ Napi::Value version(const Napi::CallbackInfo& info) {
 
 Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+
   std::string device = info[0].As<Napi::String>().Utf8Value();
   unsigned int offset = info[1].As<Napi::Number>().Uint32Value();
   bool active_low = info[2].As<Napi::Boolean>().Value();
@@ -37,6 +38,7 @@ Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
 
 Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+
   std::string device = info[0].As<Napi::String>().Utf8Value();
   unsigned int offset = info[1].As<Napi::Number>().Uint32Value();
   unsigned int value = info[2].As<Napi::Number>().Uint32Value();
@@ -51,39 +53,26 @@ Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(env, true);
 }
 
-// Assumes Line class is defined and included.
-
 Napi::Value readBit(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+
   if (info.Length() < 2 || !info[0].IsObject() || !info[1].IsObject()) {
     Napi::TypeError::New(env, "Wrong arguments, expected two Line instances").ThrowAsJavaScriptException();
-
     return env.Null();
   }
 
-  Napi::Object pdSckObj = info[0].As<Napi::Object>();
-  Line *pdSck = Line::Unwrap(pdSckObj);
-
-  Napi::Object doutObj = info[1].As<Napi::Object>();
-  Line *dout = Line::Unwrap(doutObj);
+  Line* pdSck = Napi::ObjectWrap<Line>::Unwrap(info[0].As<Napi::Object>());
+  Line* dout = Napi::ObjectWrap<Line>::Unwrap(info[1].As<Napi::Object>());
 
   if (!pdSck || !dout) {
     Napi::Error::New(env, "Could not unwrap Line object").ThrowAsJavaScriptException();
-
     return env.Null();
   }
 
   try {
-    // pdSck.setValueCpp(1)
     pdSck->setValueCpp(1);
-
-    // usleep(1)
-//     usleep(1);
-
-    // bitValue = dout.getValueCpp()
+    // usleep(1);
     unsigned int bitValue = dout->getValueCpp();
-
-    // pdSck.setValueCpp(0)
     pdSck->setValueCpp(0);
 
     return Napi::Number::New(env, bitValue);
