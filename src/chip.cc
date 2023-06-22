@@ -9,7 +9,7 @@ Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod<&Chip::getNumberOfLines>("getNumberOfLines", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
         InstanceMethod<&Chip::getChipName>("getChipName", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
         InstanceMethod<&Chip::getChipLabel>("getChipLabel", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
-        StaticMethod<&Chip::New>("New", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
+        StaticMethod<&Chip::New>("CreateNewInstance", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
     });
 
     Napi::FunctionReference* constructor = new Napi::FunctionReference();
@@ -33,7 +33,7 @@ Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
     return exports;
 }
 
-Napi::Value Chip::New(const Napi::CallbackInfo& info) {
+Napi::Value Chip::CreateNewInstance(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
   std::string device = info[0].As<Napi::String>();

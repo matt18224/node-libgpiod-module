@@ -16,6 +16,7 @@
 class Chip : public Napi::ObjectWrap<Chip> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
+  static Napi::Value CreateNewInstance(const Napi::CallbackInfo& info);
   Chip(const Napi::CallbackInfo& info);
   ~Chip();
 
@@ -27,8 +28,6 @@ class Chip : public Napi::ObjectWrap<Chip> {
   Napi::Value getNumberOfLines(const Napi::CallbackInfo& info);
   Napi::Value getChipName(const Napi::CallbackInfo& info);
   Napi::Value getChipLabel(const Napi::CallbackInfo& info);
-
-  static Napi::Value New(const Napi::CallbackInfo& info);
 
   gpiod_chip *chip;
 };
