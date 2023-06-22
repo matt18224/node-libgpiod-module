@@ -45,9 +45,9 @@ Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   std::string device;
   if(info[0].IsNumber()) {
-    device = info[0].ToString();
+    device = info[0].ToString().Utf8Value();
   } else if(info[0].IsString()) {
-    device = info[0].As<Napi::String>;
+    device = info[0].As<Napi::String>().Utf8Value();
   } else {
     Napi::Error::New(env, "Wrong argument type. Expected string or number").ThrowAsJavaScriptException();
   }
