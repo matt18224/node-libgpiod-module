@@ -7,11 +7,11 @@ Napi::Object Line::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod<&Line::getLineOffset>("getLineOffset", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
         InstanceMethod<&Line::getLineName>("getLineName", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
         InstanceMethod<&Line::getLineConsumer>("getLineConsumer", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
-        InstanceMethod<&Line::getValue>("getValue", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
-        InstanceMethod<&Line::setValue>("setValue", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
-        InstanceMethod<&Line::requestInputMode>("requestInputMode", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
-        InstanceMethod<&Line::requestOutputMode>("requestOutputMode", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
-        InstanceMethod<&Line::release>("release", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+        InstanceMethod<&Line::getValue>("getValue", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+        InstanceMethod<&Line::setValue>("setValue", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+        InstanceMethod<&Line::requestInputMode>("requestInputMode", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+        InstanceMethod<&Line::requestOutputMode>("requestOutputMode", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+        InstanceMethod<&Line::release>("release", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
         StaticMethod<&Chip::CreateNewInstance>("CreateNewInstance", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
     });
 
