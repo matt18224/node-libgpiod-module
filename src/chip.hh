@@ -23,8 +23,6 @@ class Chip : public Napi::ObjectWrap<Chip> {
   gpiod_chip* getNativeChip();
 
  private:
-  static Napi::FunctionReference constructor;
-
   Napi::Value getNumberOfLines(const Napi::CallbackInfo& info);
   Napi::Value getChipName(const Napi::CallbackInfo& info);
   Napi::Value getChipLabel(const Napi::CallbackInfo& info);
