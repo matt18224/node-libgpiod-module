@@ -1,7 +1,5 @@
 #include "chip.hh"
 
-Napi::FunctionReference Chip::constructor;
-
 Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
     Napi::HandleScope scope(env);
 
