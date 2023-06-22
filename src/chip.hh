@@ -28,6 +28,8 @@ class Chip : public Napi::ObjectWrap<Chip> {
   static Napi::Value getChipName(const Napi::CallbackInfo& info);
   static Napi::Value getChipLabel(const Napi::CallbackInfo& info);
 
+  static Napi::Value New(const Napi::CallbackInfo& info);
+
   gpiod_chip *chip;
 };
 

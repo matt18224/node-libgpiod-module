@@ -3,19 +3,32 @@
 Napi::FunctionReference Chip::constructor;
 
 Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
-  Napi::HandleScope scope(env);
+    Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(env, "Chip", {
-    InstanceMethod("getNumberOfLines", &Chip::getNumberOfLines),
-    InstanceMethod("getChipName", &Chip::getChipName),
-    InstanceMethod("getChipLabel", &Chip::getChipLabel),
-  });
+    Napi::Function func = DefineClass(env, "Chip", {
+        InstanceMethod<&Chip::getNumberOfLines>("getNumberOfLines", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+        InstanceMethod<&Chip::getChipName>("getChipName", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+        InstanceMethod<&Chip::getChipLabel>("getChipLabel", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+        StaticMethod<&Chip::New>("New", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
+    });
 
-  constructor = Napi::Persistent(func);
-  constructor.SuppressDestruct();
+    Napi::FunctionReference* constructor = new Napi::FunctionReference();
 
-  exports.Set("Chip", func);
-  return exports;
+    // Create a persistent reference to the class constructor. This will allow
+    // a function called on a class prototype and a function
+    // called on instance of a class to be distinguished from each other.
+    *constructor = Napi::Persistent(func);
+    exports.Set("Chip", func);
+
+    // Store the constructor as the add-on instance data. This will allow this
+    // add-on to support multiple instances of itself running on multiple worker
+    // threads, as well as multiple instances of itself running in different
+    // contexts on the same thread.
+    //
+    // By default, the value set on the environment here will be destroyed when
+    // the add-on is unloaded using the `delete` operator, but it is also
+    // possible to supply a custom deleter.
+    env.SetInstanceData<Napi::FunctionReference>(constructor);
 }
 
 Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
