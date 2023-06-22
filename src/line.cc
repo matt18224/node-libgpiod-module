@@ -6,7 +6,7 @@ Napi::Object Line::Init(Napi::Env env, Napi::Object exports) {
     Napi::Function func = DefineClass(env, "Line", {
         InstanceMethod<&Line::getLineOffset>("getLineOffset", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
         InstanceMethod<&Line::getLineName>("getLineName", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
-        InstanceMethod<&Line::getLineConsumer>("getLineConsumer", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+        InstanceMethod<&Line::getLineConsumer>("getLineConsumer", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
         InstanceMethod<&Line::getValue>("getValue", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
         InstanceMethod<&Line::setValue>("setValue", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
         InstanceMethod<&Line::requestInputMode>("requestInputMode", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
