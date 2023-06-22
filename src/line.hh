@@ -19,16 +19,16 @@ class Line : public Napi::ObjectWrap<Line> {
   void setValueCpp(unsigned int value);
 
  private:
-  static Napi::Value getLineOffset(const Napi::CallbackInfo& info);
-  static Napi::Value getLineName(const Napi::CallbackInfo& info);
-  static Napi::Value getLineConsumer(const Napi::CallbackInfo& info);
+  Napi::Value getLineOffset(const Napi::CallbackInfo& info);
+  Napi::Value getLineName(const Napi::CallbackInfo& info);
+  Napi::Value getLineConsumer(const Napi::CallbackInfo& info);
 
-  static Napi::Value getValue(const Napi::CallbackInfo& info);
-  static Napi::Value setValue(const Napi::CallbackInfo& info);
+  Napi::Value getValue(const Napi::CallbackInfo& info);
+  Napi::Value setValue(const Napi::CallbackInfo& info);
 
-  static Napi::Value requestInputMode(const Napi::CallbackInfo& info);
-  static Napi::Value requestOutputMode(const Napi::CallbackInfo& info);
-  static Napi::Value release(const Napi::CallbackInfo& info);
+  Napi::Value requestInputMode(const Napi::CallbackInfo& info);
+  Napi::Value requestOutputMode(const Napi::CallbackInfo& info);
+  Napi::Value release(const Napi::CallbackInfo& info);
 
   gpiod_line *line;
 };
