@@ -46,7 +46,6 @@ Line::Line(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Line>(info) {
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, line);
   if (!line){
     Napi::Error::New(env, "Unable to open GPIO line ").ThrowAsJavaScriptException();
-    return env.Null();
   }
 }
 

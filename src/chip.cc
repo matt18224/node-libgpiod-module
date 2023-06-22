@@ -50,13 +50,11 @@ Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
     device = info[0].As<Napi::String>().Utf8Value();
   } else {
     Napi::Error::New(env, "Wrong argument type. Expected string or number").ThrowAsJavaScriptException();
-    return env.Null();
   }
   chip = gpiod_chip_open_lookup(device.c_str());
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
   if (!chip) {
     Napi::Error::New(env, "Unable to open device").ThrowAsJavaScriptException();
-    return env.Null();
   }
 }
 
