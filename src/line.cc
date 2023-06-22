@@ -1,17 +1,19 @@
 #include "line.hh"
 
 Napi::Object Line::Init(Napi::Env env, Napi::Object exports) {
-  Napi::Function func = DefineClass(env, "Line", {
-    InstanceMethod("getLineOffset", &Line::getLineOffset),
-    InstanceMethod("getLineName", &Line::getLineName),
-    InstanceMethod("getLineConsumer", &Line::getLineConsumer),
-    InstanceMethod("getValue", &Line::getValue),
-    InstanceMethod("setValue", &Line::setValue),
-    InstanceMethod("requestInputMode", &Line::requestInputMode),
-    InstanceMethod("requestOutputMode", &Line::requestOutputMode),
-    InstanceMethod("release", &Line::release),
-    StaticMethod<&Chip::CreateNewInstance>("CreateNewInstance", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
-  });
+    Napi::HandleScope scope(env);
+
+    Napi::Function func = DefineClass(env, "Line", {
+        InstanceMethod<&Line::getLineOffset>("getLineOffset", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+        InstanceMethod<&Line::getLineName>("getLineName", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+        InstanceMethod<&Line::getLineConsumer>("getLineConsumer", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+        InstanceMethod<&Line::getValue>("getValue", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+        InstanceMethod<&Line::setValue>("setValue", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+        InstanceMethod<&Line::requestInputMode>("requestInputMode", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+        InstanceMethod<&Line::requestOutputMode>("requestOutputMode", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+        InstanceMethod<&Line::release>("release", static_cast<napi_property_attributes>(napi_writable | napi_configurable))),
+
+    });
 
     Napi::FunctionReference* constructor = new Napi::FunctionReference();
 
@@ -159,7 +161,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
   }
   unsigned int value = 0;
   Napi::Value defaultValue = info[0];
-  if (!defaultValue.IsUndefined() && defaultValue.IsNumber()) {
+  if (!defaultValue->IsUndefined() && defaultValue.IsNumber()) {
     unsigned int val = defaultValue.As<Napi::Number>().Uint32Value();
     if (val > 1) {
       Napi::Error::New(env, "::requestOutputMode() value is not in {0,1} range").ThrowAsJavaScriptException();
