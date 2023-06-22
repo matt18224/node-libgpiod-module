@@ -35,7 +35,7 @@ Napi::Value Chip::New(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
   return constructor->New({
-      std::string device = info[0].As<Napi::String>(),
+      std::string device = info[0].As<Napi::String>()
   });
 }
 
