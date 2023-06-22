@@ -159,7 +159,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
   }
   unsigned int value = 0;
   Napi::Value defaultValue = info[0];
-  if (!defaultValue->IsUndefined() && defaultValue.IsNumber()) {
+  if (!defaultValue.IsUndefined() && defaultValue.IsNumber()) {
     unsigned int val = defaultValue.As<Napi::Number>().Uint32Value();
     if (val > 1) {
       Napi::Error::New(env, "::requestOutputMode() value is not in {0,1} range").ThrowAsJavaScriptException();
