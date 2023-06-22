@@ -31,6 +31,14 @@ Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
     env.SetInstanceData<Napi::FunctionReference>(constructor);
 }
 
+Napi::Value Chip::New(const Napi::CallbackInfo& info) {
+  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
+  Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
+  return constructor->New({
+      std::string device = info[0].As<Napi::String>(),
+  });
+}
+
 Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);

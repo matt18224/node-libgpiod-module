@@ -24,9 +24,9 @@ class Chip : public Napi::ObjectWrap<Chip> {
  private:
   static Napi::FunctionReference constructor;
 
-  static Napi::Value getNumberOfLines(const Napi::CallbackInfo& info);
-  static Napi::Value getChipName(const Napi::CallbackInfo& info);
-  static Napi::Value getChipLabel(const Napi::CallbackInfo& info);
+  Napi::Value getNumberOfLines(const Napi::CallbackInfo& info);
+  Napi::Value getChipName(const Napi::CallbackInfo& info);
+  Napi::Value getChipLabel(const Napi::CallbackInfo& info);
 
   static Napi::Value New(const Napi::CallbackInfo& info);
 
