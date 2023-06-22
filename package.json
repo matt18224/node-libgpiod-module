@@ -17,7 +17,7 @@
   "license": "MIT",
   "scripts": {
     "configure": "node-gyp configure",
-    "build": "node-gyp build",
+    "build": "node-gyp build -j 2 build --debug",
     "clean": "node-gyp clean",
     "test": "mocha"
   },
