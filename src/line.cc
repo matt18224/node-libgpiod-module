@@ -150,14 +150,16 @@ Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
     return env.Null();
   }
+  std::string consumer = info[0].As<Napi::String>().Utf8Value();
+  DOUT( "%s %s():%d %s\n", __FILE__, __FUNCTION__, __LINE__, consumer);
 
   Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
+  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
   if (!obj->line) {
     Napi::Error::New(env, "::requestInputMode() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
   }
-  std::string consumer = info[0].As<Napi::String>().Utf8Value();
-  DOUT( "%s %s():%d %s\n", __FILE__, __FUNCTION__, __LINE__, consumer);
+
   if (-1 == gpiod_line_request_input(obj->getNativeLine(), consumer.c_str())) {
     Napi::Error::New(env, "::requestInputMode() failed").ThrowAsJavaScriptException();
     return env.Null();
