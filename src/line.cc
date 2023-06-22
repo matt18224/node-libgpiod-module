@@ -43,7 +43,7 @@ Line::~Line() {
 Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   if ( !obj->line) {
     Napi::Error::New(env, "::getLineOffset() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
@@ -57,7 +57,7 @@ Napi::Value Line::getLineOffset(const Napi::CallbackInfo& info) {
 Napi::Value Line::getLineName(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   if ( !obj->line) {
     Napi::Error::New(env, "::getLineName() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
@@ -70,7 +70,7 @@ Napi::Value Line::getLineName(const Napi::CallbackInfo& info) {
 Napi::Value Line::getLineConsumer(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   if ( !obj->line) {
     Napi::Error::New(env, "::getLineConsumer() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
@@ -102,7 +102,7 @@ void Line::setValueCpp(unsigned int value) {
 
 Napi::Value Line::getValue(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   try {
     unsigned int ret = obj->getValueCpp();
     return Napi::Number::New(env, ret);
@@ -114,7 +114,7 @@ Napi::Value Line::getValue(const Napi::CallbackInfo& info) {
 
 Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   unsigned int value = info[0].As<Napi::Number>().Uint32Value();
   try {
     obj->setValueCpp(value);
@@ -126,7 +126,7 @@ Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
 Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   if (!obj->line) {
     Napi::Error::New(env, "::requestInputMode() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
@@ -139,7 +139,7 @@ Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
 Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   if (!obj->line) {
     Napi::Error::New(env, "::requestOutputMode() for line==NULL").ThrowAsJavaScriptException();
     return env.Null();
@@ -162,7 +162,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
 
 Napi::Value Line::release(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This());
+  Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   if ( !obj->getNativeLine())     return env.Null();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);

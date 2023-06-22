@@ -41,7 +41,7 @@ Chip::~Chip() {
 Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This());
+  Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This().As<Napi::Object>());
   if ( !obj->chip) {
     Napi::Error::New(env, "::getNumberOfLines() for chip==NULL").ThrowAsJavaScriptException();
     return env.Null();
@@ -55,7 +55,7 @@ Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo& info) {
 Napi::Value Chip::getChipName(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This());
+  Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This().As<Napi::Object>());
   if ( !obj->chip) {
     Napi::Error::New(env, "::getChipName() for chip==NULL").ThrowAsJavaScriptException();
     return env.Null();
@@ -69,7 +69,7 @@ Napi::Value Chip::getChipName(const Napi::CallbackInfo& info) {
 Napi::Value Chip::getChipLabel(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This());
+  Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This().As<Napi::Object>());
   if ( !obj->chip) {
     Napi::Error::New(env, "::getChipLabel() for chip==NULL").ThrowAsJavaScriptException();
     return env.Null();
