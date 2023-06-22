@@ -35,7 +35,7 @@ Napi::Value Chip::CreateNewInstance(const Napi::CallbackInfo& info) {
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
 
-  return constructor->New({info[0].As<Napi::String>()});
+  return constructor->New({info[0].ToString()});
 }
 
 Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
