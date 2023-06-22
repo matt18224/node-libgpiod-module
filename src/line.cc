@@ -1,7 +1,5 @@
 #include "line.hh"
 
-Napi::FunctionReference Line::constructor;
-
 Napi::Object Line::Init(Napi::Env env, Napi::Object exports) {
   Napi::Function func = DefineClass(env, "Line", {
     InstanceMethod("getLineOffset", &Line::getLineOffset),
@@ -12,13 +10,28 @@ Napi::Object Line::Init(Napi::Env env, Napi::Object exports) {
     InstanceMethod("requestInputMode", &Line::requestInputMode),
     InstanceMethod("requestOutputMode", &Line::requestOutputMode),
     InstanceMethod("release", &Line::release),
+    StaticMethod<&Chip::CreateNewInstance>("CreateNewInstance", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
   });
 
-  constructor = Napi::Persistent(func);
-  constructor.SuppressDestruct(); // Needed to avoid crashes when the environment is cleaned up
+    Napi::FunctionReference* constructor = new Napi::FunctionReference();
 
-  exports.Set("Line", func);
-  return exports;
+    // Create a persistent reference to the class constructor. This will allow
+    // a function called on a class prototype and a function
+    // called on instance of a class to be distinguished from each other.
+    *constructor = Napi::Persistent(func);
+    exports.Set("Line", func);
+
+    // Store the constructor as the add-on instance data. This will allow this
+    // add-on to support multiple instances of itself running on multiple worker
+    // threads, as well as multiple instances of itself running in different
+    // contexts on the same thread.
+    //
+    // By default, the value set on the environment here will be destroyed when
+    // the add-on is unloaded using the `delete` operator, but it is also
+    // possible to supply a custom deleter.
+    env.SetInstanceData<Napi::FunctionReference>(constructor);
+
+    return exports;
 }
 
 Line::Line(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Line>(info) {

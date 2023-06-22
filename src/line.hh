@@ -10,6 +10,7 @@
 class Line : public Napi::ObjectWrap<Line> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
+  static Napi::Value CreateNewInstance(const Napi::CallbackInfo& info);
   Line(const Napi::CallbackInfo& info);
   ~Line();
 
@@ -18,8 +19,6 @@ class Line : public Napi::ObjectWrap<Line> {
   void setValueCpp(unsigned int value);
 
  private:
-  static Napi::FunctionReference constructor;
-
   static Napi::Value getLineOffset(const Napi::CallbackInfo& info);
   static Napi::Value getLineName(const Napi::CallbackInfo& info);
   static Napi::Value getLineConsumer(const Napi::CallbackInfo& info);
