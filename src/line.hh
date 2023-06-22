@@ -11,6 +11,7 @@ class Line : public Napi::ObjectWrap<Line> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   Line(const Napi::CallbackInfo& info);
+  ~Line();
 
   gpiod_line *getNativeLine();
   unsigned int getValueCpp();

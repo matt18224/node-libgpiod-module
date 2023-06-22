@@ -17,6 +17,7 @@ class Chip : public Napi::ObjectWrap<Chip> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   Chip(const Napi::CallbackInfo& info);
+  ~Chip();
 
   gpiod_chip* getNativeChip();
 
