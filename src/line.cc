@@ -128,6 +128,7 @@ Napi::Value Line::getValue(const Napi::CallbackInfo& info) {
     Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
     return env.Null();
   }
+  return env.Null();
 }
 
 Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
@@ -140,6 +141,7 @@ Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
     Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
     return env.Null();
   }
+  return env.Null();
 }
 
 Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
@@ -164,6 +166,8 @@ Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
     Napi::Error::New(env, "::requestInputMode() failed").ThrowAsJavaScriptException();
     return env.Null();
   }
+
+  return env.Null();
 }
 
 Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
@@ -190,6 +194,7 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
     Napi::Error::New(env, "::requestOutputMode() failed").ThrowAsJavaScriptException();
     return env.Null();
   }
+  return env.Null();
 }
 
 Napi::Value Line::release(const Napi::CallbackInfo& info) {
@@ -201,6 +206,7 @@ Napi::Value Line::release(const Napi::CallbackInfo& info) {
   gpiod_line_release(obj->getNativeLine());
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   obj->line = NULL;
+  return env.Null();
 }
 
 gpiod_line *Line::getNativeLine() {
