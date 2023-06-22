@@ -145,6 +145,12 @@ Napi::Value Line::setValue(const Napi::CallbackInfo& info) {
 Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
+
+  if (info.Length() < 1 || !info[0].IsString()) {
+    Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   Line *obj = Napi::ObjectWrap<Line>::Unwrap(info.This().As<Napi::Object>());
   if (!obj->line) {
     Napi::Error::New(env, "::requestInputMode() for line==NULL").ThrowAsJavaScriptException();
