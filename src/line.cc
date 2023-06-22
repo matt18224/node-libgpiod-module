@@ -151,9 +151,10 @@ Napi::Value Line::requestInputMode(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   std::string consumer = info[0].As<Napi::String>().Utf8Value();
-  if (-1 == gpiod_line_request_input(obj->getNativeLine(), consumer.c_str()))
+  if (-1 == gpiod_line_request_input(obj->getNativeLine(), consumer.c_str())) {
     Napi::Error::New(env, "::requestInputMode() failed").ThrowAsJavaScriptException();
     return env.Null();
+  }
 }
 
 Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
@@ -176,9 +177,10 @@ Napi::Value Line::requestOutputMode(const Napi::CallbackInfo& info) {
   }
   DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, obj);
   std::string consumer = info[1].As<Napi::String>().Utf8Value();
-  if (-1 == gpiod_line_request_output(obj->getNativeLine(), consumer.c_str(), value))
+  if (-1 == gpiod_line_request_output(obj->getNativeLine(), consumer.c_str(), value)) {
     Napi::Error::New(env, "::requestOutputMode() failed").ThrowAsJavaScriptException();
     return env.Null();
+  }
 }
 
 Napi::Value Line::release(const Napi::CallbackInfo& info) {
