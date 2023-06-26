@@ -5,10 +5,14 @@
             "conditions": [
                 ["OS=='linux'", {
                     "sources": [
-                        "src/*.cc",
-                        "src/*.cpp",
-                        "src/*.hpp",
-                        "src/*.hh",
+                        "src/chip.cc",
+                        "src/enumhelpers.cpp",
+                        "src/lineconfig.cpp",
+                        "src/linerequest.cpp",
+                        "src/linesettings.cpp",
+                        "src/main.cc",
+                        "src/misc.cc",
+                        "src/requestbuilder.cpp"
                     ],
                     "include_dirs": [
                        '<!(node -p "require(\'node-addon-api\').include_dir")'
