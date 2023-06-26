@@ -48,32 +48,32 @@ void checkArgTypes(const Napi::CallbackInfo &info,
   }
 }
 
-Validator isIntInClosedRange(const int start, const int end)
-{
-  return [start, end](const Napi::Value &value) {
-      bool isNum = value.IsNumber();
-      if (isNum)
-      {
-        int num = value.As<Napi::Number>();
-        return num >= start && num <= end;
-      }
-      return false;
-  };
-}
+//Validator isIntInClosedRange(const int start, const int end)
+//{
+//  return [start, end](const Napi::Value &value) {
+//      bool isNum = value.IsNumber();
+//      if (isNum)
+//      {
+//        int num = value.As<Napi::Number>();
+//        return num >= start && num <= end;
+//      }
+//      return false;
+//  };
+//}
+//
+//Validator isString()
+//{
+//  return [](const Napi::Value &value) {
+//      return value.IsString();
+//  };
+//}
 
-Validator isString()
-{
-  return [](const Napi::Value &value) {
-      return value.IsString();
-  };
-}
-
-Validator isInSet(const std::set<std::string> &validValues)
-{
-  return [validValues](const Napi::Value &value) {
-      return value.IsString() && validValues.contains(value.As<Napi::String>());
-  };
-}
+//Validator isInSet(const std::set<std::string> &validValues)
+//{
+//  return [validValues](const Napi::Value &value) {
+//      return value.IsString() && validValues.contains(value.As<Napi::String>());
+//  };
+//}
 
 Validator intersection(std::initializer_list<Validator> validators) {
   return [validators](const Napi::Value& value) -> bool {
