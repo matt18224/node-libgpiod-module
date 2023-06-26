@@ -18,7 +18,8 @@
                        '<!(node -p "require(\'node-addon-api\').include_dir")'
                     ],
                     "libraries" : [
-                        "-lgpiod"
+                        "-lgpiod",
+                        "-lgpiodcxx"
                     ],
                     "cflags!": ["-fno-exceptions" ],
                     "cflags_cc!": ["-fno-exceptions" ],
