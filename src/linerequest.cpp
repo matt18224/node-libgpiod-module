@@ -5,6 +5,8 @@
 #include "linerequest.hpp"
 #include "enumhelpers.hpp"
 
+Napi::FunctionReference LineRequest::constructor;
+
 LineRequest::LineRequest(const Napi::CallbackInfo &info) : ObjectWrap(info)
 {
   auto nativeRequest = info[0].As<Napi::External<gpiod::line_request>>().Data();
