@@ -548,6 +548,11 @@ node-addon-api@^7.0.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-7.0.0.tgz#8136add2f510997b3b94814f4af1cce0b0e3962e"
   integrity sha512-vgbBJTS4m5/KkE16t5Ly0WW9hz46swAstv0hYYwMtbG7AznRhNyfLRe8HZAiWIpcHzoO7HxhLuBQj9rJ/Ho0ZA==
 
+node-api-headers@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/node-api-headers/-/node-api-headers-1.0.1.tgz#80b7369f7e1a911b2a0f230bdd6c450d64459d2c"
+  integrity sha512-42iSgdJwCPp2eDYB4jrj8tJ5SjakZA41I7QxilOXa8E1fPbKyfr7hG4VzikCableU/HUqpnwmoqGNVnUYYbeIQ==
+
 node-gyp@^9.4.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/node-gyp/-/node-gyp-9.4.0.tgz#2a7a91c7cba4eccfd95e949369f27c9ba704f369"

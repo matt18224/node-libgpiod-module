@@ -1,10 +1,13 @@
 #include "misc.hh"
+#include "gpiod.hpp"
 
-Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
+Napi::Value usleepWrapper(const Napi::CallbackInfo &info)
+{
   Napi::Env env = info.Env();
 
-  if (info.Length() < 1 || !info[0].IsNumber()) {
-    Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
+  if (info.Length() < 1 || !info[0].IsNumber())
+  {
+    throw Napi::TypeError::New(env, "Wrong arguments");
     return env.Null();
   }
 
@@ -14,12 +17,14 @@ Napi::Value usleepWrapper(const Napi::CallbackInfo& info) {
   return Napi::String::New(env, "Delay done");
 }
 
-Napi::Value version(const Napi::CallbackInfo& info) {
+Napi::Value version(const Napi::CallbackInfo &info)
+{
   Napi::Env env = info.Env();
-  return Napi::String::New(env, gpiod_version_string());
+  return Napi::String::New(env, gpiod::api_version());
 }
 
-Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
+/*Napi::Value getInstantLineValue(const Napi::CallbackInfo &info)
+{
   Napi::Env env = info.Env();
 
   std::string device = info[0].As<Napi::String>().Utf8Value();
@@ -28,15 +33,18 @@ Napi::Value getInstantLineValue(const Napi::CallbackInfo& info) {
   std::string consumer = info[3].As<Napi::String>().Utf8Value();
 
   int value = -1;
-  if (-1 == (value = gpiod_ctxless_get_value(device.c_str(), offset, active_low, consumer.c_str()))) {
-    Napi::Error::New(env, "Unable to get instant value").ThrowAsJavaScriptException();
+  if (-1 == (value = gpiod::(device.c_str(), offset, active_low,
+                                             consumer.c_str())))
+  {
+    throw Napi::Error::New.As<Napi::Object>()(env, "Unable to get instant value");
     return env.Null();
   }
 
   return Napi::Number::New(env, value);
 }
 
-Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
+Napi::Value setInstantLineValue(const Napi::CallbackInfo &info)
+{
   Napi::Env env = info.Env();
 
   std::string device = info[0].As<Napi::String>().Utf8Value();
@@ -45,39 +53,59 @@ Napi::Value setInstantLineValue(const Napi::CallbackInfo& info) {
   bool active_low = info[3].As<Napi::Boolean>().Value();
   std::string consumer = info[4].As<Napi::String>().Utf8Value();
 
-  if (-1 == gpiod_ctxless_set_value(device.c_str(), offset, value, active_low, consumer.c_str(), NULL, NULL)) {
-    Napi::Error::New(env, "Unable to set instant value").ThrowAsJavaScriptException();
+  if (-1 ==
+      gpiod_ctxless_set_value(device.c_str(), offset, value, active_low, consumer.c_str(),
+                              NULL, NULL))
+  {
+    throw Napi::Error::New(env, "Unable to set instant value");
     return env.Null();
   }
 
   return Napi::Boolean::New(env, true);
-}
+}*/
 
-Napi::Value readBit(const Napi::CallbackInfo& info) {
+/*
+Napi::Object readDHT11Reading(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+  if (info.Length() < 1 || !info[0].IsObject())
+  {
+    throw Napi::TypeError::New(env, "Wrong arguments, expected line argument");
+  }
+  Line *dout = Napi::ObjectWrap<Line>::Unwrap(info[0].As<Napi::Object>());
+}
+*/
+
+/*
+Napi::Value readBit(const Napi::CallbackInfo &info)
+{
   Napi::Env env = info.Env();
 
-  if (info.Length() < 2 || !info[0].IsObject() || !info[1].IsObject()) {
-    Napi::TypeError::New(env, "Wrong arguments, expected two Line instances").ThrowAsJavaScriptException();
+  if (info.Length() < 2 || !info[0].IsObject() || !info[1].IsObject())
+  {
+    throw Napi::TypeError::New(env, "Wrong arguments, expected two Line instances");
     return env.Null();
   }
 
-  Line* pdSck = Napi::ObjectWrap<Line>::Unwrap(info[0].As<Napi::Object>());
-  Line* dout = Napi::ObjectWrap<Line>::Unwrap(info[1].As<Napi::Object>());
+  Line *pdSck = Napi::ObjectWrap<Line>::Unwrap(info[0].As<Napi::Object>());
+  Line *dout = Napi::ObjectWrap<Line>::Unwrap(info[1].As<Napi::Object>());
 
-  if (!pdSck || !dout) {
-    Napi::Error::New(env, "Could not unwrap Line object").ThrowAsJavaScriptException();
-    return env.Null();
+  if (!pdSck || !dout)
+  {
+    throw Napi::Error::New(env, "Could not unwrap Line object");
   }
 
-  try {
+  try
+  {
     pdSck->setValueCpp(1);
     // usleep(1);
     unsigned int bitValue = dout->getValueCpp();
     pdSck->setValueCpp(0);
 
     return Napi::Number::New(env, bitValue);
-  } catch (const std::runtime_error& e) {
-    Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
-    return env.Null();
   }
-}
+  catch (const std::runtime_error &e)
+  {
+    throw Napi::Error::New(env, e.what());
+  }
+}*/

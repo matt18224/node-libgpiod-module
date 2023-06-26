@@ -1,118 +1,116 @@
 #include "chip.hh"
+#include "requestbuilder.hpp"
+#include <filesystem>
 
-Napi::Object Chip::Init(Napi::Env env, Napi::Object exports) {
-    Napi::HandleScope scope(env);
+Napi::Object Chip::Init(Napi::Env env, Napi::Object exports)
+{
+  Napi::HandleScope scope(env);
 
-    Napi::Function func = DefineClass(env, "Chip", {
-        InstanceMethod<&Chip::getNumberOfLines>("getNumberOfLines", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
-        InstanceMethod<&Chip::getChipName>("getChipName", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
-        InstanceMethod<&Chip::getChipLabel>("getChipLabel", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
-        StaticMethod<&Chip::CreateNewInstance>("CreateNewInstance", static_cast<napi_property_attributes>(napi_writable | napi_configurable))
-    });
+  Napi::Function func = DefineClass(env, "Chip", {
+      InstanceMethod("getNumberOfLines", &Chip::getNumberOfLines),
+      InstanceMethod("getChipName", &Chip::getChipName),
+      InstanceMethod("getChipLabel", &Chip::getChipLabel),
+      InstanceMethod("createRequest", &Chip::createRequest)
+  });
 
-    Napi::FunctionReference* constructor = new Napi::FunctionReference();
+  auto *constructor = new Napi::FunctionReference();
 
-    // Create a persistent reference to the class constructor. This will allow
-    // a function called on a class prototype and a function
-    // called on instance of a class to be distinguished from each other.
-    *constructor = Napi::Persistent(func);
-    exports.Set("Chip", func);
+  // Create a persistent reference to the class constructor. This will allow
+  // a function called on a class prototype and a function
+  // called on instance of a class to be distinguished from each other.
+  *constructor = Napi::Persistent(func);
+  constructor->SuppressDestruct();
+  exports.Set("Chip", func);
 
-    // Store the constructor as the add-on instance data. This will allow this
-    // add-on to support multiple instances of itself running on multiple worker
-    // threads, as well as multiple instances of itself running in different
-    // contexts on the same thread.
-    //
-    // By default, the value set on the environment here will be destroyed when
-    // the add-on is unloaded using the `delete` operator, but it is also
-    // possible to supply a custom deleter.
-    env.SetInstanceData<Napi::FunctionReference>(constructor);
-
-    return exports;
+  // Store the constructor as the add-on instance data. This will allow this
+  // add-on to support multiple instances of itself running on multiple worker
+  // threads, as well as multiple instances of itself running in different
+  // contexts on the same thread.
+  //
+  // By default, the value set on the environment here will be destroyed when
+  // the add-on is unloaded using the `delete` operator, but it is also
+  // possible to supply a custom deleter.
+  env.SetInstanceData<Napi::FunctionReference>(constructor);
+  return exports;
 }
 
-Napi::Value Chip::CreateNewInstance(const Napi::CallbackInfo& info) {
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
-  Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
-
-  return constructor->New({info[0]});
-}
-
-Chip::Chip(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Chip>(info) {
+Chip::Chip(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Chip>(info)
+{
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
+  DOUT("%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   std::string device;
-  if(info[0].IsNumber()) {
+  if (info[0].IsNumber())
+  {
     device = info[0].ToString().Utf8Value();
-  } else if(info[0].IsString()) {
+  }
+  else if (info[0].IsString())
+  {
     device = info[0].As<Napi::String>().Utf8Value();
-  } else {
-    Napi::Error::New(env, "Wrong argument type. Expected string or number").ThrowAsJavaScriptException();
   }
-  chip = gpiod_chip_open_lookup(device.c_str());
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
-  if (!chip) {
-    Napi::Error::New(env, "Unable to open device").ThrowAsJavaScriptException();
+  else
+  {
+    throw Napi::Error::New(env,
+                           "Wrong argument type. Expected string or number");
+  }
+  chip = std::unique_ptr<gpiod::chip, ChipDeleter>(new gpiod::chip(device));
+  DOUT("%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
+  if (!chip)
+  {
+    throw Napi::Error::New(env, "Unable to open device");
   }
 }
 
-Chip::~Chip() {
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
-  if ( !chip) return;
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
-  gpiod_chip_close(chip);
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
-  chip = NULL;
+Chip::~Chip()
+{
 }
 
-Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo& info) {
+Napi::Value Chip::getNumberOfLines(const Napi::CallbackInfo &info)
+{
   Napi::Env env = info.Env();
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
+  DOUT("%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This().As<Napi::Object>());
-  if ( !obj->chip) {
-    Napi::Error::New(env, "::getNumberOfLines() for chip==NULL").ThrowAsJavaScriptException();
-    return env.Null();
+  int ret = obj->chip->get_info().num_lines();;
+  if (-1 == ret)
+  {
+    throw Napi::Error::New(env, "::getNumberOfLines() failed");
   }
-  int ret = gpiod_chip_num_lines(obj->getNativeChip());
-  if(-1 == ret) {
-    Napi::Error::New(env, "::getNumberOfLines() failed").ThrowAsJavaScriptException();
-    return env.Null();
-  } else return Napi::Number::New(env, ret);
+  else return Napi::Number::New(env, ret);
 }
 
-Napi::Value Chip::getChipName(const Napi::CallbackInfo& info) {
+Napi::Value Chip::getChipName(const Napi::CallbackInfo &info)
+{
   Napi::Env env = info.Env();
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
+  DOUT("%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This().As<Napi::Object>());
-  if ( !obj->chip) {
-    Napi::Error::New(env, "::getChipName() for chip==NULL").ThrowAsJavaScriptException();
-    return env.Null();
+  if (!obj->chip)
+  {
+    throw Napi::Error::New(env, "::getChipLabel() for chip==NULL");
   }
-  const char *name = gpiod_chip_name(obj->getNativeChip());
-  if(!name) {
-    Napi::Error::New(env, "::getChipName() failed").ThrowAsJavaScriptException();
-    return env.Null();
-  } else return Napi::String::New(env, name);
+  auto name = chip->get_info().name();
+  return Napi::String::New(env, name);
 }
 
-Napi::Value Chip::getChipLabel(const Napi::CallbackInfo& info) {
+Napi::Value Chip::getChipLabel(const Napi::CallbackInfo &info)
+{
   Napi::Env env = info.Env();
-  DOUT( "%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
+  DOUT("%s %s():%d\n", __FILE__, __FUNCTION__, __LINE__);
   Chip *obj = Napi::ObjectWrap<Chip>::Unwrap(info.This().As<Napi::Object>());
-  if ( !obj->chip) {
-    Napi::Error::New(env, "::getChipLabel() for chip==NULL").ThrowAsJavaScriptException();
-    return env.Null();
+  if (!obj->chip)
+  {
+    throw Napi::Error::New(env, "::getChipLabel() for chip==NULL");
   }
-  const char *label = gpiod_chip_label(obj->getNativeChip());
-  if(!label) {
-    Napi::Error::New(env, "::getChipLabel() failed").ThrowAsJavaScriptException();
-    return env.Null();
-  } else return Napi::String::New(env, label);
+  const std::string label = chip->get_info().label();
+  return Napi::String::New(env, label);
 }
 
-gpiod_chip *Chip::getNativeChip() {
-  DOUT( "%s %s():%d %p\n", __FILE__, __FUNCTION__, __LINE__, chip);
-  return chip;
+Napi::Value Chip::createRequest(const Napi::CallbackInfo &info)
+{
+  auto copied = new gpiod::request_builder(chip->prepare_request());
+  Napi::Value ext = Napi::External<gpiod::request_builder>::New(
+      info.Env(),
+      copied
+  );
+  return RequestBuilder::constructor.New({ext});
 }

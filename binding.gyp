@@ -5,10 +5,10 @@
             "conditions": [
                 ["OS=='linux'", {
                     "sources": [
-                        "src/main.cc",
-                        "src/misc.cc",
-                        "src/chip.cc",
-                        "src/line.cc"
+                        "src/*.cc",
+                        "src/*.cpp",
+                        "src/*.hpp",
+                        "src/*.hh",
                     ],
                     "include_dirs": [
                        '<!(node -p "require(\'node-addon-api\').include_dir")'
@@ -16,8 +16,14 @@
                     "libraries" : [
                         "-lgpiod"
                     ],
-                    "cflags!": ["-std=c++11", "-fno-exceptions" ],
-                    "cflags_cc!": ["-std=c++11", "-fno-exceptions" ],
+                    "cflags!": ["-fno-exceptions" ],
+                    "cflags_cc!": ["-fno-exceptions" ],
+                    "cflags": [
+                            "-std=c++17"
+                    ],
+                    "cflags_cc": [
+                            "-std=c++17"
+                    ],
                     "xcode_settings": {
                       "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
                       "CLANG_CXX_LIBRARY": "libc++",
@@ -25,7 +31,8 @@
                     },
                     "msvs_settings": {
                       "VCCLCompilerTool": { "ExceptionHandling": 1 }
-                    }
+                    },
+                    "defines": [ "NAPI_CPP_EXCEPTIONS" ]
                 }]
             ]
         }
