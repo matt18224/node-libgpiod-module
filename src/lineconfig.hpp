@@ -10,9 +10,9 @@
 
 class LineConfig : public Napi::ObjectWrap<LineConfig>
 {
-    static Napi::Object Init(Napi::Env env, Napi::Object exports);
-    explicit LineConfig(const Napi::CallbackInfo& info);
-    ~LineConfig() override;
+//    static Napi::Object Init(Napi::Env env, Napi::Object exports);
+//    explicit LineConfig(const Napi::CallbackInfo& info);
+//    ~LineConfig() override;
 };
 
 #endif //NODE_LIBGPIOD_LINECONFIG_HPP

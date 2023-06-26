@@ -14,9 +14,7 @@ class LineRequest : public Napi::ObjectWrap<LineRequest>
 public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
 
-    LineRequest(const Napi::CallbackInfo &info);
-
-    ~LineRequest();
+    explicit LineRequest(const Napi::CallbackInfo &info);
 
     friend class RequestBuilder;
 
