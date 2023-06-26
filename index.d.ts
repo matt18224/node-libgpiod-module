@@ -1,4 +1,3 @@
-
 /**
  * Chip instances represent GPIO chips (each with a fixed number of
  * GPIO lines) on the Linux host. The number of GPIO chips depends on
@@ -35,89 +34,8 @@ export declare class Chip {
      * Returns the GPIO chip label as represented by the kernel.
      */
     getChipLabel(): string
-}
 
-/**
- * Line instances represent direct access to a specific GPIO line on
- * the Linux host. Those lines can be reserved as input or output.
- */
-export declare class Line {
-
-    /**
-     * Constructs a new Line instance for the given chip and line offset.
-     *
-     * @param chip the parent gpio chip
-     * @param offset the line offset
-     * @throws error if the line cannot be opened
-     */
-    constructor(chip: Chip, offset: number);
-
-    /**
-     * Returns the line offset of this Line instance for the assigned GPIO chip.
-     *
-     * @throws error if the line offset cannot be read
-     */
-    getLineOffset(): number;
-
-    /**
-     * Returns the line name as represented by the kernel. The name is either a
-     * valid string, or undefined if not set.
-     *
-     * @throws error if the line name cannot be read
-     */
-    getLineName(): string | undefined;
-
-    /**
-     * Returns the line consumer as represented by the kernel. This consumer is
-     * either a valid string, or undefined if not set.
-     *
-     * @throws error if the line consumer cannot be read
-     */
-    getLineConsumer(): string | undefined;
-
-    /**
-     * Returns the state value of the line as off (0) or on (1).
-     * @throws error if the line is not reserved
-     */
-    getValue(): 0 | 1;
-
-    /**
-     * Sets the state of the line to either on or off. Setting the same state as
-     * current, nothing happens.
-     *
-     * @param value the new state of the output line (0 = off, 1 = on)
-     * @throws error if the line is not reserved as an output
-     */
-    setValue(value: 0 | 1): void;
-
-    /**
-     * Releases a previously created reservation. If the line is not reserved at
-     * the time of calling this method, nothing happens.
-     */
-    release(): void;
-
-    /**
-     * Reserves the current line as an output. It is possible to pass a defaultValue,
-     * which defines the base state of the line (off or on). If not given, the default
-     * state is off.
-     *
-     * In addition, a consumer name can be given to assign a name to the reservation.
-     *
-     * @param defaultValue an optional default value (0 = off, 1 = on)
-     * @param consumer an optional consumer name to assign to the reservation
-     * @throws error if the line is already reserved
-     */
-    requestOutputMode(defaultValue?: 0 | 1, consumer?: string): void;
-
-    /**
-     * Reserves the current line as an input.
-     *
-     * A consumer name can be given to assign a name to the reservation.
-     *
-     * @param consumer an optional consumer name to assign to the reservation
-     * @throws error if the line is already reserved
-     */
-    requestInputMode(consumer?: string): void;
+    createRequest(): RequestBuilder;
 }
 
 /**
@@ -129,4 +47,34 @@ export declare function available(): boolean;
 
 export declare function usleep(microseconds: number): void;
 
-export declare function readBit(pdSck: Line, dout: Line): 0 | 1;
+type Direction = "INPUT" | "OUTPUT" | "AS_IS";
+
+export declare class LineSettings {
+    constructor() {
+
+    }
+
+    getDirection(): Direction;
+
+    setDirection(direction: Direction);
+
+    reset(): void;
+
+    setOutputValue(value: 0 | 1): void;
+
+    getOutputValue(): 0 | 1;
+}
+
+export declare class LineRequest {
+    getValue(offset: number): 0 | 1;
+
+    setValue(offset: number, value: 0 | 1): void;
+
+    release();
+}
+
+export declare class RequestBuilder {
+    addLineSettings(lineSettings: LineSettings): void;
+
+    doRequest(): LineRequest;
+}

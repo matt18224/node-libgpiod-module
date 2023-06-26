@@ -21,7 +21,8 @@ public:
     friend class RequestBuilder;
 
 private:
-    struct LineRequestDestructor {
+    struct LineRequestDestructor
+    {
         void operator()(gpiod::line_request *l) const
         {
           l->release();
@@ -34,7 +35,10 @@ private:
     std::unique_ptr<gpiod::line_request, LineRequestDestructor> lineRequestInstance;
 
     Napi::Value GetValue(const Napi::CallbackInfo &info);
+
     Napi::Value SetValue(const Napi::CallbackInfo &info);
+
+    Napi::Value Release(const Napi::CallbackInfo &info);
 };
 
 #endif //NODE_LIBGPIOD_LINEREQUEST_HPP

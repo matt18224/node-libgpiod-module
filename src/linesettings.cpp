@@ -65,14 +65,9 @@ Napi::Value LineSettings::Reset(const Napi::CallbackInfo &info)
 Napi::Value LineSettings::SetOutputValue(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
-  checkArgTypes(info, {
-      isIntInClosedRange(0, 1),
-      isString()
-  });
-
   //info[0] is a number in a valid range, info[1] is a string
-  std::string valueStr = info[1].As<Napi::String>();
-  gpiod::line::value value = nameToValue(info, valueStr);
+  bool valueStr = info[0].As<Napi::Number>().ToBoolean();
+  gpiod::line::value value = boolToValue(info, valueStr);
   lineSettingsInstance->set_output_value(value);
   return env.Undefined();
 }
@@ -80,6 +75,6 @@ Napi::Value LineSettings::SetOutputValue(const Napi::CallbackInfo &info)
 Napi::Value LineSettings::GetOutputValue(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
-  std::string rv = valueToName(info, lineSettingsInstance->output_value());
-  return Napi::String::New(env, rv);
+  int rv = valueToBool(info, lineSettingsInstance->output_value());
+  return Napi::Number::New(env, rv);
 }

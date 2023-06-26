@@ -8,7 +8,8 @@
 LineRequest::LineRequest(const Napi::CallbackInfo &info) : ObjectWrap(info)
 {
   auto nativeRequest = info[0].As<Napi::External<gpiod::line_request>>().Data();
-  lineRequestInstance = std::unique_ptr<gpiod::line_request, LineRequestDestructor>(nativeRequest);
+  lineRequestInstance = std::unique_ptr<gpiod::line_request, LineRequestDestructor>(
+      nativeRequest);
 }
 
 Napi::Object LineRequest::Init(Napi::Env env, Napi::Object exports)
@@ -18,6 +19,7 @@ Napi::Object LineRequest::Init(Napi::Env env, Napi::Object exports)
   Napi::Function func = DefineClass(env, "LineSettings", {
       InstanceMethod("getValue", &LineRequest::GetValue),
       InstanceMethod("setValue", &LineRequest::SetValue),
+      InstanceMethod("release", &LineRequest::Release)
   });
 
   constructor = Napi::Persistent(func);
@@ -41,5 +43,11 @@ Napi::Value LineRequest::SetValue(const Napi::CallbackInfo &info)
   int intValue = info[1].As<Napi::Number>();
   auto value = boolToValue(info, intValue);
   lineRequestInstance->set_value(offset, value);
+  return info.Env().Undefined();
+}
+
+Napi::Value LineRequest::Release(const Napi::CallbackInfo &info)
+{
+  lineRequestInstance->release();
   return info.Env().Undefined();
 }
