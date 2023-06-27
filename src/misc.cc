@@ -88,11 +88,14 @@ Napi::Value readBit(const Napi::CallbackInfo &info)
 
   try
   {
-    lineRequest->lineRequestInstance->set_value(pdSckPinOffset, 1);
+    lineRequest->lineRequestInstance
+               ->set_value(pdSckPinOffset, gpiod::line::value::ACTIVE);
     usleep(1);
-    const unsigned int bitValue = lineRequest->lineRequestInstance->get_value
-        (doutPinOffset);
-    lineRequest->lineRequestInstance->set_value(pdSckPinOffset, 0);
+    const int bitValue = lineRequest->lineRequestInstance
+                                    ->get_value(doutPinOffset) ==
+                         gpiod::line::value::ACTIVE;
+    lineRequest->lineRequestInstance->set_value(pdSckPinOffset,
+                                                gpiod::line::value::INACTIVE);
     usleep(1);
     return Napi::Number::New(env, bitValue);
   }
