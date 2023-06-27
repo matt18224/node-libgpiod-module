@@ -16,11 +16,8 @@ public:
 
     explicit LineRequest(const Napi::CallbackInfo &info);
 
-    std::unique_ptr<gpiod::line_request, LineRequestDestructor> lineRequestInstance;
-
     friend class RequestBuilder;
 
-private:
     struct LineRequestDestructor
     {
         void operator()(gpiod::line_request *l) const
@@ -30,6 +27,9 @@ private:
         }
     };
 
+    std::unique_ptr<gpiod::line_request, LineRequestDestructor> lineRequestInstance;
+
+private:
     static Napi::FunctionReference constructor;
 
     Napi::Value GetValue(const Napi::CallbackInfo &info);
