@@ -53,7 +53,7 @@ Napi::Value RequestBuilder::AddLineSettings(const Napi::CallbackInfo &info)
   requestBuilderInstance->add_line_settings(
       offset,
       *(lineSettings->lineSettingsInstance));
-  return info.Env().Undefined();
+  return info.This();
 }
 
 Napi::Value RequestBuilder::DoRequest(const Napi::CallbackInfo &info)
