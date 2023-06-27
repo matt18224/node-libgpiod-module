@@ -47,7 +47,7 @@ export declare function available(): boolean;
 
 export declare function usleep(microseconds: number): void;
 
-export declare function readBit(lineRequest: LineRequest, pdSckPinOffset: number, doutPinOffset: number);
+export declare function readBit(lineRequest: LineRequest, pdSckPinOffset: number, doutPinOffset: number): number;
 
 type Direction = "INPUT" | "OUTPUT" | "AS_IS";
 

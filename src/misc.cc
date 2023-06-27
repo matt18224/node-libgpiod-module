@@ -90,13 +90,11 @@ Napi::Value readBit(const Napi::CallbackInfo &info)
   {
     lineRequest->lineRequestInstance
                ->set_value(pdSckPinOffset, gpiod::line::value::ACTIVE);
-    usleep(1);
     const int bitValue = lineRequest->lineRequestInstance
                                     ->get_value(doutPinOffset) ==
                          gpiod::line::value::ACTIVE;
     lineRequest->lineRequestInstance->set_value(pdSckPinOffset,
                                                 gpiod::line::value::INACTIVE);
-    usleep(1);
     return Napi::Number::New(env, bitValue);
   }
   catch (const std::runtime_error &e)
