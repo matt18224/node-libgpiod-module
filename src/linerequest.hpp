@@ -16,6 +16,8 @@ public:
 
     explicit LineRequest(const Napi::CallbackInfo &info);
 
+    std::unique_ptr<gpiod::line_request, LineRequestDestructor> lineRequestInstance;
+
     friend class RequestBuilder;
 
 private:
@@ -30,13 +32,6 @@ private:
 
     static Napi::FunctionReference constructor;
 
-    std::unique_ptr<gpiod::line_request, LineRequestDestructor> lineRequestInstance;
-
-    Napi::Value GetValue(const Napi::CallbackInfo &info);
-
-    Napi::Value SetValue(const Napi::CallbackInfo &info);
-
-    Napi::Value Release(const Napi::CallbackInfo &info);
 };
 
 #endif //NODE_LIBGPIOD_LINEREQUEST_HPP

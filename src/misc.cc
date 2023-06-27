@@ -1,5 +1,6 @@
 #include "misc.hh"
 #include "gpiod.hpp"
+#include "linerequest.hpp"
 
 Napi::Value usleepWrapper(const Napi::CallbackInfo &info)
 {
@@ -76,36 +77,27 @@ Napi::Object readDHT11Reading(const Napi::CallbackInfo &info)
 }
 */
 
-/*
 Napi::Value readBit(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
 
-  if (info.Length() < 2 || !info[0].IsObject() || !info[1].IsObject())
-  {
-    throw Napi::TypeError::New(env, "Wrong arguments, expected two Line instances");
-    return env.Null();
-  }
-
-  Line *pdSck = Napi::ObjectWrap<Line>::Unwrap(info[0].As<Napi::Object>());
-  Line *dout = Napi::ObjectWrap<Line>::Unwrap(info[1].As<Napi::Object>());
-
-  if (!pdSck || !dout)
-  {
-    throw Napi::Error::New(env, "Could not unwrap Line object");
-  }
+  LineRequest *lineRequest = Napi::ObjectWrap<LineRequest>::Unwrap(info[0]
+                                                                       .As<Napi::Object>());
+  unsigned int pdSckPinOffset = info[1].As<Napi::Number>();
+  unsigned int doutPinOffset = info[2].As<Napi::Number>();
 
   try
   {
-    pdSck->setValueCpp(1);
-    // usleep(1);
-    unsigned int bitValue = dout->getValueCpp();
-    pdSck->setValueCpp(0);
-
+    lineRequest->lineRequestInstance->set_value(pdSckPinOffset, 1);
+    usleep(1);
+    const unsigned int bitValue = lineRequest->lineRequestInstance->get_value
+        (doutPinOffset);
+    lineRequest->lineRequestInstance->set_value(pdSckPinOffset, 0);
+    usleep(1);
     return Napi::Number::New(env, bitValue);
   }
   catch (const std::runtime_error &e)
   {
     throw Napi::Error::New(env, e.what());
   }
-}*/
+}
