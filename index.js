@@ -21,5 +21,5 @@ if (os.type() === 'Linux') {
         }
     }
 }
-export const {Chip, usleep, readBit, LineSettings, LineRequest, RequestBuilder} = libgpiod;
+export const {Chip, usleep, readBit, LineSettings, LineRequest, RequestBuilder, readLong} = libgpiod;
 export default libgpiod;

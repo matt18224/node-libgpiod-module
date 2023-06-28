@@ -77,6 +77,91 @@ Napi::Object readDHT11Reading(const Napi::CallbackInfo &info)
 }
 */
 
+bool isReady(const LineRequest *lineRequest, const unsigned int doutOffset)
+{
+  return lineRequest->lineRequestInstance->get_value(doutOffset) ==
+         gpiod::line::value::INACTIVE;
+}
+
+unsigned char readBitCpp(const LineRequest *lineRequest, const unsigned int pdSckOffset,
+                         const unsigned int doutOffset)
+{
+  lineRequest->lineRequestInstance
+             ->set_value(pdSckOffset, gpiod::line::value::ACTIVE);
+  const auto bitValue = (unsigned char) (lineRequest->lineRequestInstance
+                                                    ->get_value(doutOffset) ==
+                                         gpiod::line::value::ACTIVE);
+  lineRequest->lineRequestInstance->set_value(pdSckOffset,
+                                              gpiod::line::value::INACTIVE);
+  return bitValue;
+}
+
+unsigned char readByte(const LineRequest *lineRequest, const unsigned int pdSckOffset,
+                       const unsigned int doutOffset)
+{
+  unsigned char byteValue = 0;
+  for (int i = 0; i < 8; ++i)
+  {
+    byteValue <<= 1;
+    byteValue |= readBitCpp(lineRequest, pdSckOffset, doutOffset);
+  }
+  return byteValue;
+}
+
+long readLongCpp(const LineRequest *lineRequest,
+                 const unsigned int gain,
+                 const unsigned int pdSckOffset,
+                 const unsigned int doutOffset)
+{
+  while (!isReady(lineRequest, doutOffset))
+  {
+  }
+  unsigned long value = 0;
+  uint8_t data[3] = {0};
+  uint8_t filler = 0x00;
+
+  data[2] = readByte(lineRequest, pdSckOffset, doutOffset);
+  data[1] = readByte(lineRequest, pdSckOffset, doutOffset);
+  data[0] = readByte(lineRequest, pdSckOffset, doutOffset);
+
+  for (unsigned int i = 0; i < gain; i++)
+  {
+    lineRequest->lineRequestInstance->set_value(pdSckOffset, gpiod::line::value::ACTIVE);
+    lineRequest->lineRequestInstance
+               ->set_value(pdSckOffset, gpiod::line::value::INACTIVE);
+  }
+
+  if (data[2] & 0x80)
+  {
+    filler = 0xFF;
+  }
+  else
+  {
+    filler = 0x00;
+  }
+
+  value = (static_cast<unsigned long>(filler) << 24
+           | static_cast<unsigned long>(data[2]) << 16
+           | static_cast<unsigned long>(data[1]) << 8
+           | static_cast<unsigned long>(data[0]));
+
+  return static_cast<long>(value);
+}
+
+Napi::Value readLong(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  LineRequest *lineRequest = Napi::ObjectWrap<LineRequest>::Unwrap(info[0]
+                                                                       .As<Napi::Object>());
+  unsigned int pdSckPinOffset = info[1].As<Napi::Number>();
+  unsigned int doutPinOffset = info[2].As<Napi::Number>();
+  unsigned int gain = info[3].As<Napi::Number>();
+
+  return Napi::Number::New(env, (double) readLongCpp(lineRequest, gain, pdSckPinOffset,
+                                                     doutPinOffset));
+}
+
 Napi::Value readBit(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
@@ -88,14 +173,7 @@ Napi::Value readBit(const Napi::CallbackInfo &info)
 
   try
   {
-    lineRequest->lineRequestInstance
-               ->set_value(pdSckPinOffset, gpiod::line::value::ACTIVE);
-    const int bitValue = lineRequest->lineRequestInstance
-                                    ->get_value(doutPinOffset) ==
-                         gpiod::line::value::ACTIVE;
-    lineRequest->lineRequestInstance->set_value(pdSckPinOffset,
-                                                gpiod::line::value::INACTIVE);
-    return Napi::Number::New(env, bitValue);
+    return Napi::Number::New(env, readBitCpp(lineRequest, pdSckPinOffset, doutPinOffset));
   }
   catch (const std::runtime_error &e)
   {

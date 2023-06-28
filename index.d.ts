@@ -49,6 +49,8 @@ export declare function usleep(microseconds: number): void;
 
 export declare function readBit(lineRequest: LineRequest, pdSckPinOffset: number, doutPinOffset: number): number;
 
+export declare function readLong(lineRequest: LineRequest, pdSckPinOffset: number, doutPinOffset: number, gain: 1 | 2 | 3)
+
 type Direction = "INPUT" | "OUTPUT" | "AS_IS";
 
 export declare class LineSettings {
