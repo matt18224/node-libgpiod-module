@@ -10,10 +10,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_SOURCE_DIR}/node_modules/node-addon-api)
+        ${CMAKE_SOURCE_DIR}/../../node_modules/node-addon-api)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_SOURCE_DIR}/node_modules/node-api-headers/include)
+        ${CMAKE_SOURCE_DIR}/../../node_modules/node-api-headers/include)
 
 # define NPI_VERSION
 add_definitions(-DNAPI_VERSION=7)

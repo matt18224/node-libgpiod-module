@@ -15,6 +15,7 @@ public:
     ~LineSettings() override;
 
     friend class RequestBuilder;
+    friend class LineConfig;
 
 private:
     static Napi::FunctionReference constructor;

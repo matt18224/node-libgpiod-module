@@ -60,7 +60,7 @@ export declare class LineSettings {
 
     getDirection(): Direction;
 
-    setDirection(direction: Direction);
+    setDirection(direction: Direction): void;
 
     reset(): void;
 
@@ -74,11 +74,19 @@ export declare class LineRequest {
 
     setValue(offset: number, value: 0 | 1): void;
 
-    release();
+    release(): void;
+
+    reconfigureLines(config: LineConfig): void;
 }
 
 export declare class RequestBuilder {
     addLineSettings(offset: number, lineSettings: LineSettings): RequestBuilder;
 
     doRequest(): LineRequest;
+}
+
+export declare class LineConfig {
+    reset(): void;
+
+    addLineSetting(lineSettings: LineSettings): LineConfig
 }

@@ -37,6 +37,8 @@ private:
     Napi::Value SetValue(const Napi::CallbackInfo &info);
 
     Napi::Value Release(const Napi::CallbackInfo &info);
+
+    Napi::Value ReconfigureLines(const Napi::CallbackInfo &info);
 };
 
 #endif //NODE_LIBGPIOD_LINEREQUEST_HPP

@@ -39,9 +39,7 @@ RequestBuilder::RequestBuilder(const Napi::CallbackInfo &info) : ObjectWrap(info
   requestBuilderInstance = std::unique_ptr<gpiod::request_builder>(arg);
 }
 
-RequestBuilder::~RequestBuilder()
-{
-}
+RequestBuilder::~RequestBuilder() = default;
 
 Napi::Value RequestBuilder::AddLineSettings(const Napi::CallbackInfo &info)
 {

@@ -4,6 +4,7 @@
 
 #include "linerequest.hpp"
 #include "enumhelpers.hpp"
+#include "lineconfig.hpp"
 
 Napi::FunctionReference LineRequest::constructor;
 
@@ -21,7 +22,9 @@ Napi::Object LineRequest::Init(Napi::Env env, Napi::Object exports)
   Napi::Function func = DefineClass(env, "LineSettings", {
       InstanceMethod("getValue", &LineRequest::GetValue),
       InstanceMethod("setValue", &LineRequest::SetValue),
-      InstanceMethod("release", &LineRequest::Release)
+      InstanceMethod("release", &LineRequest::Release),
+      InstanceMethod("reconfigureLines", &LineRequest::ReconfigureLines),
+
   });
 
   constructor = Napi::Persistent(func);
@@ -51,5 +54,14 @@ Napi::Value LineRequest::SetValue(const Napi::CallbackInfo &info)
 Napi::Value LineRequest::Release(const Napi::CallbackInfo &info)
 {
   lineRequestInstance->release();
+  return info.Env().Undefined();
+}
+
+Napi::Value LineRequest::ReconfigureLines(const Napi::CallbackInfo &info)
+{
+  const auto lineConfig = Napi::ObjectWrap<LineConfig>::Unwrap(info[0]
+                                                                       .As<Napi::Object>());
+
+  lineRequestInstance->reconfigure_lines(*(lineConfig->lineConfigInstance));
   return info.Env().Undefined();
 }

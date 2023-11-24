@@ -10,9 +10,19 @@
 
 class LineConfig : public Napi::ObjectWrap<LineConfig>
 {
-//    static Napi::Object Init(Napi::Env env, Napi::Object exports);
-//    explicit LineConfig(const Napi::CallbackInfo& info);
-//    ~LineConfig() override;
+public:
+    static Napi::Object Init(Napi::Env env, Napi::Object exports);
+    explicit LineConfig(const Napi::CallbackInfo &info);
+    ~LineConfig() override;
+    Napi::Value AddLineSetting(const Napi::CallbackInfo& info);
+    Napi::Value Reset(const Napi::CallbackInfo& info);
+
+    friend class LineRequest;
+
+private:
+    static Napi::FunctionReference constructor;
+
+    std::unique_ptr<gpiod::line_config> lineConfigInstance;
 };
 
 #endif //NODE_LIBGPIOD_LINECONFIG_HPP
