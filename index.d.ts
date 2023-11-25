@@ -60,11 +60,11 @@ export declare class LineSettings {
 
     getDirection(): Direction;
 
-    setDirection(direction: Direction): void;
+    setDirection(direction: Direction): LineSettings;
 
     reset(): void;
 
-    setOutputValue(value: 0 | 1): void;
+    setOutputValue(value: 0 | 1): LineSettings;
 
     getOutputValue(): 0 | 1;
 }
@@ -89,4 +89,10 @@ export declare class LineConfig {
     reset(): void;
 
     addLineSetting(lineSettings: LineSettings): LineConfig
+
+    static createFromLiteral(mapping: LineConfigMapping): LineConfig
+}
+
+export declare type LineConfigMapping = {
+    [k: number]: LineSettings
 }

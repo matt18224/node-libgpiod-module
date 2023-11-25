@@ -47,11 +47,10 @@ Napi::Value LineSettings::GetDirection(const Napi::CallbackInfo &info)
 
 Napi::Value LineSettings::SetDirection(const Napi::CallbackInfo &info)
 {
-  Napi::Env env = info.Env();
   std::string direction = info[0].As<Napi::String>().Utf8Value();
   gpiod::line::direction lineDirection = nameToDirection(info, direction);
   lineSettingsInstance->set_direction(lineDirection);
-  return env.Null();
+  return info.This();
 }
 
 Napi::Value LineSettings::Reset(const Napi::CallbackInfo &info)
@@ -59,7 +58,7 @@ Napi::Value LineSettings::Reset(const Napi::CallbackInfo &info)
   Napi::Env env = info.Env();
   checkArgTypes(info, std::vector<Validator>());
   lineSettingsInstance->reset();
-  return env.Null();
+  return env.Undefined();
 }
 
 Napi::Value LineSettings::SetOutputValue(const Napi::CallbackInfo &info)
@@ -69,7 +68,7 @@ Napi::Value LineSettings::SetOutputValue(const Napi::CallbackInfo &info)
   bool valueStr = info[0].As<Napi::Number>().ToBoolean();
   gpiod::line::value value = boolToValue(info, valueStr);
   lineSettingsInstance->set_output_value(value);
-  return env.Undefined();
+  return info.This();
 }
 
 Napi::Value LineSettings::GetOutputValue(const Napi::CallbackInfo &info)

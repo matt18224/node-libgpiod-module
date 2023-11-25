@@ -7,6 +7,7 @@
 
 #include <gpiod.hpp>
 #include <napi.h>
+#include "linesettings.hpp"
 
 class LineConfig : public Napi::ObjectWrap<LineConfig>
 {
@@ -17,11 +18,15 @@ public:
     Napi::Value AddLineSetting(const Napi::CallbackInfo& info);
     Napi::Value Reset(const Napi::CallbackInfo& info);
 
+    static Napi::Value CreateFromLiteral(const Napi::CallbackInfo &info);
+
     friend class LineRequest;
 
 private:
     static Napi::FunctionReference constructor;
 
+    void privateAddLineSetting(gpiod::line::offset offset,
+                               const LineSettings *lineSettings);
     std::unique_ptr<gpiod::line_config> lineConfigInstance;
 };
 
