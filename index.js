@@ -10,16 +10,25 @@ if (os.type() === 'Linux') {
     libgpiod.Chip.prototype.getLine = function getLine(n) {
         return new libgpiod.Line(this, n);
     };
-    
-    libgpiod.available = function() {
+
+    libgpiod.available = function () {
         return true;
     }
 } else {
     libgpiod = {
-        available: function() {
+        available: function () {
             return false;
         }
     }
 }
-export const {Chip, usleep, readBit, LineSettings, LineRequest, RequestBuilder, readLong} = libgpiod;
+export const {
+    Chip,
+    usleep,
+    readBit,
+    LineSettings,
+    LineRequest,
+    RequestBuilder,
+    readLong,
+    LineConfig
+} = libgpiod;
 export default libgpiod;

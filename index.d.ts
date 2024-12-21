@@ -82,6 +82,8 @@ export declare class LineRequest {
 export declare class RequestBuilder {
     addLineSettings(offset: number, lineSettings: LineSettings): RequestBuilder;
 
+    setLineConfig(lineConfig: LineConfig): RequestBuilder;
+
     doRequest(): LineRequest;
 }
 

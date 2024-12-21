@@ -10,6 +10,7 @@
                         "src/lineconfig.cpp",
                         "src/linerequest.cpp",
                         "src/linesettings.cpp",
+                        "src/ds18b20reader.cpp",
                         "src/main.cc",
                         "src/misc.cc",
                         "src/requestbuilder.cpp"

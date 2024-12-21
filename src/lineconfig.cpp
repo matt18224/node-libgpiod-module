@@ -12,6 +12,12 @@ LineConfig::LineConfig(const Napi::CallbackInfo &info) : ObjectWrap(info)
   lineConfigInstance = std::make_unique<gpiod::line_config>();
 }
 
+LineConfig::LineConfig(const Napi::CallbackInfo &info,
+                       const gpiod::line_config &config) : ObjectWrap(info)
+{
+  lineConfigInstance = std::make_unique(config);
+}
+
 Napi::Object LineConfig::Init(Napi::Env env, Napi::Object exports)
 {
   Napi::HandleScope scope(env);

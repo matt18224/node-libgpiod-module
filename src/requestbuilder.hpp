@@ -27,6 +27,10 @@ private:
     Napi::Value DoRequest(const Napi::CallbackInfo &info);
 
     std::unique_ptr<gpiod::request_builder> requestBuilderInstance;
+
+    Napi::Value SetLineConfig(const Napi::CallbackInfo &info);
+
+    Napi::Value GetLineConfig(const Napi::CallbackInfo &info);
 };
 
 #endif //NODE_LIBGPIOD_REQUESTBUILDER_HPP

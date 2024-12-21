@@ -21,7 +21,7 @@ Napi::Object InitAll(Napi::Env env, Napi::Object exports)
   LineRequest::Init(env, exports);
   RequestBuilder::Init(env, exports);
   LineSettings::Init(env, exports);
-//  LineConfig::Init(env, exports);
+  LineConfig::Init(env, exports);
 
   return exports;
 }

@@ -14,6 +14,7 @@ class LineConfig : public Napi::ObjectWrap<LineConfig>
 public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
     explicit LineConfig(const Napi::CallbackInfo &info);
+    explicit LineConfig(const Napi::CallbackInfo &info, const gpiod::line_config &config);
     ~LineConfig() override;
     Napi::Value AddLineSetting(const Napi::CallbackInfo& info);
     Napi::Value Reset(const Napi::CallbackInfo& info);
@@ -21,6 +22,7 @@ public:
     static Napi::Value CreateFromLiteral(const Napi::CallbackInfo &info);
 
     friend class LineRequest;
+    friend class RequestBuilder;
 
 private:
     static Napi::FunctionReference constructor;

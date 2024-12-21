@@ -7,6 +7,7 @@
 #include "linerequest.hpp"
 #include "napi.h"
 #include "linesettings.hpp"
+#include "lineconfig.hpp"
 
 Napi::FunctionReference RequestBuilder::constructor;
 
@@ -16,6 +17,7 @@ Napi::Object RequestBuilder::Init(Napi::Env env, Napi::Object exports)
 
   Napi::Function func = DefineClass(env, "LineSettings", {
       InstanceMethod("addLineSettings", &RequestBuilder::AddLineSettings),
+      InstanceMethod("setLineConfig", &RequestBuilder::SetLineConfig),
       InstanceMethod("doRequest", &RequestBuilder::DoRequest),
   });
 
@@ -47,11 +49,27 @@ Napi::Value RequestBuilder::AddLineSettings(const Napi::CallbackInfo &info)
   const unsigned int offset = info[0].As<Napi::Number>();
   const auto lineSettings = Napi::ObjectWrap<LineSettings>::Unwrap(info[1]
                                                                        .As<Napi::Object>());
+
   //Safe to pass reference. LineSettings are copied, a reference isn't held
   requestBuilderInstance->add_line_settings(
       offset,
       *(lineSettings->lineSettingsInstance));
   return info.This();
+}
+
+Napi::Value RequestBuilder::SetLineConfig(const Napi::CallbackInfo &info)
+{
+  const auto lineConfig = Napi::ObjectWrap<LineConfig>::Unwrap(info[0]
+                                                                   .As<Napi::Object>());
+
+  requestBuilderInstance->set_line_config(*(lineConfig->lineConfigInstance));
+
+  return info.This();
+}
+
+Napi::Value RequestBuilder::GetLineConfig(const Napi::CallbackInfo &info)
+{
+  const auto lineConfig = new LineConfig(info, requestBuilderInstance->get_line_config());
 }
 
 Napi::Value RequestBuilder::DoRequest(const Napi::CallbackInfo &info)
@@ -63,5 +81,3 @@ Napi::Value RequestBuilder::DoRequest(const Napi::CallbackInfo &info)
   );
   return LineRequest::constructor.New({ext});
 }
-
-

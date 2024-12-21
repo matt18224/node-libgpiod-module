@@ -1,0 +1,12 @@
+//
+// Created by Matt on 11/25/2023.
+//
+
+#ifndef NODE_LIBGPIOD_DS18B20READER_HPP
+#define NODE_LIBGPIOD_DS18B20READER_HPP
+
+class ds18b20reader
+{
+};
+
+#endif //NODE_LIBGPIOD_DS18B20READER_HPP
